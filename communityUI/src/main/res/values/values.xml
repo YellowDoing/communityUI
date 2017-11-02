@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- string -->
+
+    <string name="app_name">Community</string>
+    <string name="post_title">发帖</string>
+
+
+    <!-- dimen -->
+
+    <dimen name="dp_4">4dp</dimen>
+    <dimen name="dp_8">8dp</dimen>
+    <dimen name="dp_12">12dp</dimen>
+    <dimen name="dp_16">16dp</dimen>
+    <dimen name="dp_24">24dp</dimen>
+    <dimen name="dp_40">40dp</dimen>
+    <dimen name="dp_48">48dp</dimen>
+
+    <dimen name="sp_16">16sp</dimen>
+
+    <!-- color -->
+
+    <color name="gray">#adadad</color>
+    <color name="name">#355998</color>
+    <color name="black">#000000</color>
+
+
+    <!-- styleable -->
+
+    <declare-styleable name="CircleImageView">
+        <attr name="civ_border_width" format="dimension" />
+        <attr name="civ_border_color" format="color" />
+        <attr name="civ_border_overlay" format="boolean" />
+        <attr name="civ_fill_color" format="color" />
+    </declare-styleable>
+</resources>

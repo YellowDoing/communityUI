@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:padding="@dimen/fab_margin"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:layout_weight="1"
+                android:textSize="@dimen/sp_16"
+                android:textColor="@color/black"
+                android:gravity="center"
+                android:text="@string/username"
+                android:layout_width="1dp"
+                android:layout_height="wrap_content"/>
+        <EditText
+                android:id="@+id/et_username"
+                android:layout_marginRight="@dimen/fab_margin"
+                android:layout_weight="4"
+                android:hint="@string/hint_username"
+                android:layout_width="1dp"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:textSize="@dimen/sp_16"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:text="@string/password"
+                android:layout_weight="1"
+                android:layout_width="1dp"
+                android:layout_height="wrap_content"/>
+
+        <EditText
+                android:id="@+id/et_password"
+                android:layout_marginRight="@dimen/fab_margin"
+                android:hint="@string/hint_password"
+                android:layout_width="1dp"
+                android:layout_weight="4"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <Button
+            android:text="@string/login"
+            android:layout_margin="@dimen/fab_margin"
+            android:id="@+id/bt_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    <TextView
+            android:textColor="@color/blue"
+            android:gravity="right"
+            android:layout_marginRight="@dimen/fab_margin"
+            android:text="@string/register"
+            android:id="@+id/tv_regitser"
+            android:layout_width="match_parent"
+              android:layout_height="wrap_content"/>
+
+</LinearLayout>
