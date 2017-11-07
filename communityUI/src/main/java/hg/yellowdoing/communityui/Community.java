@@ -12,7 +12,7 @@ import cn.bmob.v3.BmobUser;
 
 public class Community implements Serializable {
 
-    private BmobUser author;
+    private User author;
     private List<String> imagePaths;
     private Integer likeNum;
     private Integer replyNum;
@@ -52,11 +52,11 @@ public class Community implements Serializable {
         this.content = content;
     }
 
-    public BmobUser getAuthor() {
+    public User getAuthor() {
         return author;
     }
 
-    public void setAuthor(BmobUser author) {
+    public void setAuthor(User author) {
         this.author = author;
     }
 }
