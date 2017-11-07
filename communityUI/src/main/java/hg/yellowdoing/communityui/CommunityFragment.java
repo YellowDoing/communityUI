@@ -19,7 +19,7 @@ public class CommunityFragment extends Fragment  implements BGARefreshLayout.BGA
 
     private RecyclerView mRecyclerView;
     private CommunityAdapter mAdapter;
-    private List<CommunityBean> mCommunityBeanList;
+    private List<Community> mCommunityBeanList;
     private BGARefreshLayout mRefreshLayout;
     private View mView;
 
@@ -46,7 +46,7 @@ initViw();return mView;
                 mRefreshLayout.setIsShowLoadingMoreView(true);
 
                 mCommunityBeanList = new ArrayList<>();
-                CommunityBean communityBean = new CommunityBean();
+                Community communityBean = new Community();
                 communityBean.setContent("会计核算会计的哈我");
                 communityBean.setName("客户端开始减肥");
                 mCommunityBeanList.add(communityBean);

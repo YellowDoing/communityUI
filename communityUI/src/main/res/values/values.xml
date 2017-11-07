@@ -5,6 +5,7 @@
 
     <string name="app_name">Community</string>
     <string name="post_title">发帖</string>
+    <string name="hint_content">输入内容...</string>
 
 
     <!-- dimen -->
@@ -16,6 +17,7 @@
     <dimen name="dp_24">24dp</dimen>
     <dimen name="dp_40">40dp</dimen>
     <dimen name="dp_48">48dp</dimen>
+    <dimen name="dp_160">160dp</dimen>
 
     <dimen name="sp_16">16sp</dimen>
 

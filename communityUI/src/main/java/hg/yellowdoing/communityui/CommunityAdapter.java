@@ -18,11 +18,11 @@ import java.util.List;
 
 public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.CommunityViewHolder> {
 
-    private List<CommunityBean>  mCommunityBeanList;
+    private List<Community>  mCommunityBeanList;
     private Context mContext;
     private LayoutInflater mInflater;
 
-    public CommunityAdapter(Context context, List<CommunityBean> communityBeanList) {
+    public CommunityAdapter(Context context, List<Community> communityBeanList) {
         mCommunityBeanList = communityBeanList;
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
@@ -36,7 +36,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
     @Override
     public void onBindViewHolder(CommunityViewHolder holder, int position) {
 
-        CommunityBean communityBean = mCommunityBeanList.get(position);
+        Community communityBean = mCommunityBeanList.get(position);
 
         holder.mTvNickName.setText(communityBean.getName());
         holder.mTvContent.setText(communityBean.getContent());
