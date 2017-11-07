@@ -28,7 +28,29 @@ public class Community implements Serializable {
         this.replyNum = replyNum;
     }
 
+    public List<String> getImagePaths() {
+        return imagePaths;
+    }
 
+    public void setImagePaths(List<String> imagePaths) {
+        this.imagePaths = imagePaths;
+    }
+
+    public Integer getLikeNum() {
+        return likeNum;
+    }
+
+    public void setLikeNum(Integer likeNum) {
+        this.likeNum = likeNum;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
 
     public BmobUser getAuthor() {
         return author;
