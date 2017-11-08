@@ -46,10 +46,10 @@ initViw();return mView;
                 mRefreshLayout.setIsShowLoadingMoreView(true);
 
                 mCommunityBeanList = new ArrayList<>();
-                Community communityBean = new Community();
+                /*Community communityBean = new Community();
                 communityBean.setContent("会计核算会计的哈我");
                 communityBean.setName("客户端开始减肥");
-                mCommunityBeanList.add(communityBean);
+                mCommunityBeanList.add(communityBean);*/
                 mAdapter = new CommunityAdapter(getActivity(),mCommunityBeanList);
                 mRecyclerView.setAdapter(mAdapter);
 

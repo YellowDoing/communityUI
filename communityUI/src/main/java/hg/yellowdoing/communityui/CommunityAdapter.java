@@ -38,9 +38,9 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
 
         Community communityBean = mCommunityBeanList.get(position);
 
-        holder.mTvNickName.setText(communityBean.getName());
-        holder.mTvContent.setText(communityBean.getContent());
-        Glide.with(mContext).load(communityBean.getAvatar()).into(holder.mIvAvatar);
+        //／／h／／older.mTvNickName.setText(communityBea.getName());
+        //／／holder.mTvContent.setText(communityBean.getContent());
+        //Glide.with(mContext).load(communityBean.getAvatar()).into(holder.mIvAvatar);
 
     }
 

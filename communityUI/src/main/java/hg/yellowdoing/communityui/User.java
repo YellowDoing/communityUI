@@ -1,6 +1,7 @@
 package hg.yellowdoing.communityui;
 
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.datatype.BmobFile;
 
 /**
  * Created by Administrator on 2017/11/8.
@@ -8,15 +9,15 @@ import cn.bmob.v3.BmobUser;
 
 public class User extends BmobUser {
 
-    private String avata;
+    private BmobFile avatar;
     private String nickName;
 
-    public String getAvata() {
-        return avata;
+    public BmobFile getAvatar() {
+        return avatar;
     }
 
-    public void setAvata(String avata) {
-        this.avata = avata;
+    public void setAvatar(BmobFile avatar) {
+        this.avatar = avatar;
     }
 
     public String getNickName() {

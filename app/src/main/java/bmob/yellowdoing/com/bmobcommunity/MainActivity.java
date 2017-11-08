@@ -1,10 +1,8 @@
 package bmob.yellowdoing.com.bmobcommunity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -15,6 +13,7 @@ import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobUser;
 import hg.yellowdoing.communityui.CommunityFragment;
 import hg.yellowdoing.communityui.PostActivity;
+import hg.yellowdoing.communityui.User;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (BmobUser.getCurrentUser() != null)
+                if (BmobUser.getCurrentUser(User.class) != null)
                     startActivity(new Intent(MainActivity.this, PostActivity.class));
                 else
                     startActivity(new Intent(MainActivity.this,LoginActivity.class));
@@ -58,6 +57,11 @@ public class MainActivity extends AppCompatActivity {
             BmobUser.logOut();
             startActivity(new Intent(this,LoginActivity.class));
             return true;
+        }else if (id == R.id.user_info){
+            if (BmobUser.getCurrentUser(User.class) != null)
+                startActivity(new Intent(this,UserInfoActivity.class));
+            else
+                startActivity(new Intent(this,LoginActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }

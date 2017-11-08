@@ -1,11 +1,6 @@
 package bmob.yellowdoing.com.bmobcommunity;
 
-import android.support.annotation.Nullable;
-import android.util.Log;
-import com.google.gson.Gson;
-import hg.yellowdoing.communityui.HttpUtil;
-
-import java.io.IOException;
+import hg.yellowdoing.communityui.User;
 
 public class BmobUtil {
 

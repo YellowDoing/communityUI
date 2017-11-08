@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -13,10 +12,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
-import hg.yellowdoing.communityui.HttpUtil;
+import hg.yellowdoing.communityui.User;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -52,7 +50,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void login() {
-        BmobUser user = new BmobUser();
+        User user = new User();
         user.setUsername(mEtUsername.getText().toString());
         user.setPassword(mEtPassword.getText().toString());
         user.login(new SaveListener<Object>() {
@@ -77,7 +75,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .setNegativeButton("注册", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        BmobUser user = new BmobUser();
+                        User user = new User();
                         user.setUsername(username.getText().toString());
                         user.setPassword(password.getText().toString());
                         user.signUp(new SaveListener<Object>() {

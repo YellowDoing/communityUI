@@ -25,13 +25,13 @@ public class ImageSelectAdapter extends RecyclerView.Adapter<ImageSelectAdapter.
 
     private PostActivity mContext;
     private ArrayList<String> mPaths;
-    private int dp_8,dp_72;
+    private int dp_4,dp_72;
 
 
     public ImageSelectAdapter(PostActivity context) {
         mContext = context;
         mPaths = new ArrayList<>();
-        dp_8 = dip2px(8);
+        dp_4 = dip2px(4);
         dp_72 = dip2px(72);
     }
 
@@ -101,7 +101,7 @@ public class ImageSelectAdapter extends RecyclerView.Adapter<ImageSelectAdapter.
             mImageView = itemView;
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dp_72,dp_72);
-            params.setMargins(0,0,dp_8,0);
+            params.setMargins(0,0,dp_4,0);
             mImageView.setLayoutParams(params);
         }
 

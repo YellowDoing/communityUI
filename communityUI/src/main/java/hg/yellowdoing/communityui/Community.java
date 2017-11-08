@@ -4,13 +4,13 @@ package hg.yellowdoing.communityui;
 import java.io.Serializable;
 import java.util.List;
 
-import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.BmobObject;
 
 /**
  * Created by YellowDoing on 2017/10/18.
  */
 
-public class Community implements Serializable {
+public class Community extends BmobObject implements Serializable {
 
     private User author;
     private List<String> imagePaths;
