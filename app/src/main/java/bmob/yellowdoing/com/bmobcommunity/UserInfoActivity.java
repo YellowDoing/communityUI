@@ -83,7 +83,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
         User user = BmobUser.getCurrentUser(User.class);
         if (mBmobFile != null)
-            user.setAvatar(mBmobFile);
+            user.setAvatar(mBmobFile.getUrl());
 
         user.setNickName(etNickName.getText().toString());
         user.update(new UpdateListener() {

@@ -9,83 +9,75 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import cn.bingoogolapple.refreshlayout.BGANormalRefreshViewHolder;
 import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommunityFragment extends Fragment  implements BGARefreshLayout.BGARefreshLayoutDelegate{
+public class CommunityFragment extends Fragment implements BGARefreshLayout.BGARefreshLayoutDelegate {
 
     private RecyclerView mRecyclerView;
     private CommunityAdapter mAdapter;
     private List<Community> mCommunityBeanList;
     private BGARefreshLayout mRefreshLayout;
-    private View mView;
+    private int mCurrentPage;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        mView = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_communicty, container, false);
-initViw();return mView;
+        View view = inflater.inflate(R.layout.fragment_communicty, container, false);
+        initViw(view);
+        return view;
     }
 
 
-    public void initViw(){
+    public void initViw(View view) {
 
-                mRecyclerView = (RecyclerView) mView.findViewById(R.id.rv_community);
-                mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL));
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_community);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
 
-                //设置下拉刷新并开始刷新
-                mRefreshLayout = (BGARefreshLayout) mView.findViewById(R.id.bga_refresh_layout);
-                mRefreshLayout.setDelegate(CommunityFragment.this);
-                BGANormalRefreshViewHolder refreshViewHolder = new BGANormalRefreshViewHolder(getActivity(), true);
-                mRefreshLayout.setRefreshViewHolder(refreshViewHolder);
-                mRefreshLayout.setIsShowLoadingMoreView(true);
+        //设置下拉刷新并开始刷新
+        mRefreshLayout = (BGARefreshLayout) view.findViewById(R.id.bga_refresh_layout);
+        mRefreshLayout.setDelegate(CommunityFragment.this);
+        BGANormalRefreshViewHolder refreshViewHolder = new BGANormalRefreshViewHolder(getActivity(), true);
+        mRefreshLayout.setRefreshViewHolder(refreshViewHolder);
+        mRefreshLayout.setIsShowLoadingMoreView(true);
 
-                mCommunityBeanList = new ArrayList<>();
-                /*Community communityBean = new Community();
-                communityBean.setContent("会计核算会计的哈我");
-                communityBean.setName("客户端开始减肥");
-                mCommunityBeanList.add(communityBean);*/
-                mAdapter = new CommunityAdapter(getActivity(),mCommunityBeanList);
-                mRecyclerView.setAdapter(mAdapter);
+        mCommunityBeanList = new ArrayList<>();
 
+        mAdapter = new CommunityAdapter(getActivity(), mCommunityBeanList);
+        mRecyclerView.setAdapter(mAdapter);
+
+        mRefreshLayout.beginRefreshing();
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ((ViewGroup)mView.getParent()).removeAllViews();
-    }
 
     @Override
     public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
-
+        mCurrentPage = 0;
+        CommunityService.getCommunityList(mCurrentPage,this);
     }
 
     @Override
     public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
+        mCurrentPage++;
+        CommunityService.getCommunityList(mCurrentPage,this);
         return false;
     }
 
-    /**
-     * 获取社区列表
-     */
-    private void initData(){
-/*
-        CommunityService.getCommunityList(1, 1, new HttpUtil.Callback() {
-            @Override
-            public void getResponse(String response) {
-
-            }
-        });
-*/
 
 
-
+    public void addCommunityList(List<Community> communityList){
+        if (mCurrentPage == 0)
+            mAdapter.reset(communityList);
+        else
+            mAdapter.add(communityList);
+        mRefreshLayout.endRefreshing();
+        mRefreshLayout.endLoadingMore();
     }
 
 

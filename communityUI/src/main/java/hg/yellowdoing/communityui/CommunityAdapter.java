@@ -3,6 +3,7 @@ package hg.yellowdoing.communityui;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,10 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
+
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.QueryListener;
 
 /**
  * Created by YellowDing on 2017/10/18.
@@ -28,19 +33,46 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
         mInflater = LayoutInflater.from(mContext);
     }
 
+    public void add(List<Community> communityList){
+        mCommunityBeanList.addAll(communityList);
+        notifyDataSetChanged();
+    }
+
+    public void reset(List<Community> communityList){
+        mCommunityBeanList = communityList;
+        notifyDataSetChanged();
+    }
+
     @Override
     public CommunityViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new CommunityViewHolder(mInflater.inflate(R.layout.list_item_community,null));
     }
 
     @Override
-    public void onBindViewHolder(CommunityViewHolder holder, int position) {
+    public void onBindViewHolder(final CommunityViewHolder holder, int position) {
 
-        Community communityBean = mCommunityBeanList.get(position);
+        final Community communityBean = mCommunityBeanList.get(position);
 
-        //／／h／／older.mTvNickName.setText(communityBea.getName());
-        //／／holder.mTvContent.setText(communityBean.getContent());
-        //Glide.with(mContext).load(communityBean.getAvatar()).into(holder.mIvAvatar);
+
+        BmobQuery<User> query = new BmobQuery<>();
+
+
+        query.getObject(communityBean.getAuthor().getObjectId(), new QueryListener<User>() {
+
+            @Override
+            public void done(User user, BmobException e) {
+                if(e==null){
+                    holder.mTvNickName.setText(user.getNickName());
+                    Glide.with(mContext).load(user.getAvatar()).centerCrop().into(holder.mIvAvatar);
+               }else{
+                    Log.i("bmob","失败："+e.getMessage()+","+e.getErrorCode());
+                }
+            }
+        });
+
+
+        holder.mTvContent.setText(communityBean.getContent());
+
 
     }
 

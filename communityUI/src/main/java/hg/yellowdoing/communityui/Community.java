@@ -59,4 +59,15 @@ public class Community extends BmobObject implements Serializable {
     public void setAuthor(User author) {
         this.author = author;
     }
+
+    @Override
+    public String toString() {
+        return "Community{" +
+                "author=" + author +
+                ", imagePaths=" + imagePaths +
+                ", likeNum=" + likeNum +
+                ", replyNum=" + replyNum +
+                ", content='" + content + '\'' +
+                '}';
+    }
 }

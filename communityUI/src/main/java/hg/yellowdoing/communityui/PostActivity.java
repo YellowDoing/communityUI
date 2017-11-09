@@ -96,8 +96,6 @@ public class PostActivity extends Activity implements View.OnClickListener {
             });
         } else
             post(null);
-
-
     }
 
     private void post(List<String> urls) {
