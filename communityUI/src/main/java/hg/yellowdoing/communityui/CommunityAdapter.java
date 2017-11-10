@@ -7,6 +7,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -24,6 +27,7 @@ import cn.bmob.v3.listener.QueryListener;
 
 /**
  * Created by YellowDing on 2017/10/18.
+ *
  */
 
 public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.CommunityViewHolder> {
@@ -60,6 +64,43 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
 
         if (holder.mImageContainer.getChildCount() > 0)
             holder.mImageContainer.removeAllViews();
+
+        if (communityBean.getImagePaths().size() > 0){
+            GridView gridView = new GridView(mContext);
+            gridView.setNumColumns(3);
+            gridView.setAdapter(new BaseAdapter() {
+                @Override
+                public int getCount() {
+                    return communityBean.getImagePaths().size();
+                }
+
+                @Override
+                public Object getItem(int position) {
+                    return null;
+                }
+
+                @Override
+                public long getItemId(int position) {
+                    return 0;
+                }
+
+                @Override
+                public View getView(int position, View convertView, ViewGroup parent) {
+                    ImageView view;
+                    if (convertView == null)
+                        view = new ImageView(mContext);
+                    else
+                        view = (ImageView) convertView;
+
+                    Glide.with(mContext).load(communityBean.getImagePaths().get(position)).centerCrop().into(view);
+
+
+                    return view;
+                }
+            });
+            holder.mImageContainer.addView(gridView);
+        }
+
 
         BmobQuery<User> query = new BmobQuery<>();
         query.getObject(communityBean.getAuthor().getObjectId(), new QueryListener<User>() {
