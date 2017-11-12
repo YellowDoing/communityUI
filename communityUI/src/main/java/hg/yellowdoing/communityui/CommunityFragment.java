@@ -20,22 +20,25 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
 
     private RecyclerView mRecyclerView;
     private CommunityAdapter mAdapter;
-    private List<Community> mCommunityBeanList;
+    private ArrayList<Community> mCommunityBeanList;
     private BGARefreshLayout mRefreshLayout;
     private int mCurrentPage;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_communicty, container, false);
         initViw(view);
         return view;
     }
 
 
-    public void initViw(View view) {
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
 
+    public void initViw(View view) {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_community);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
@@ -46,9 +49,9 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
         BGANormalRefreshViewHolder refreshViewHolder = new BGANormalRefreshViewHolder(getActivity(), true);
         mRefreshLayout.setRefreshViewHolder(refreshViewHolder);
         mRefreshLayout.setIsShowLoadingMoreView(true);
+        refreshViewHolder.setLoadingMoreText("加载中");
 
         mCommunityBeanList = new ArrayList<>();
-
         mAdapter = new CommunityAdapter(getActivity(), mCommunityBeanList);
         mRecyclerView.setAdapter(mAdapter);
 
@@ -66,12 +69,12 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
     public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
         mCurrentPage++;
         CommunityService.getCommunityList(mCurrentPage,this);
-        return false;
+        return true;
     }
 
 
 
-    public void addCommunityList(List<Community> communityList){
+    public void addCommunityList(ArrayList<Community> communityList){
         if (mCurrentPage == 0)
             mAdapter.reset(communityList);
         else

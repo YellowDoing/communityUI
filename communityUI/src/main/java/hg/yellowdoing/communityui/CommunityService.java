@@ -4,6 +4,7 @@ package hg.yellowdoing.communityui;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
@@ -26,8 +27,9 @@ public class CommunityService {
         query.findObjects(new FindListener<Community>() {
             @Override
             public void done(List<Community> list, BmobException e) {
+
                 if (e == null)
-                    fragment.addCommunityList(list);
+                    fragment.addCommunityList((ArrayList<Community>) list);
                 else
                     Log.d("aaaa", "done: " + e.getMessage());
             }

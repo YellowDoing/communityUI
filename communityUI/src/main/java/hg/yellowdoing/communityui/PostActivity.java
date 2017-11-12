@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.BmobUser;
@@ -64,7 +66,7 @@ public class PostActivity extends Activity implements View.OnClickListener {
 
         if (id == R.id.iv_back)
             finish();
-        else if (id == R.id.tv_submit)
+        else if (id == R.id.tv_submit)  //发帖
             uploadFiles();
     }
 
@@ -81,12 +83,11 @@ public class PostActivity extends Activity implements View.OnClickListener {
                 @Override
                 public void onSuccess(List<BmobFile> list, List<String> list1) {
                     if (list1.size() == paths.length)
-                        post(list1);
+                        post((ArrayList<String>) list1);
                 }
 
                 @Override
                 public void onProgress(int i, int i1, int i2, int i3) {
-
                 }
 
                 @Override
@@ -98,7 +99,7 @@ public class PostActivity extends Activity implements View.OnClickListener {
             post(null);
     }
 
-    private void post(List<String> urls) {
+    private void post(ArrayList<String> urls) {
         Community community = new Community();
         community.setAuthor(BmobUser.getCurrentUser(User.class));
         community.setLikeNum(0);

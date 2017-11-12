@@ -2,6 +2,7 @@ package hg.yellowdoing.communityui;
 
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.BmobObject;
@@ -13,7 +14,7 @@ import cn.bmob.v3.BmobObject;
 public class Community extends BmobObject implements Serializable {
 
     private User author;
-    private List<String> imagePaths;
+    private ArrayList<String> imagePaths;
     private Integer likeNum;
     private Integer replyNum;
     private String content;
@@ -28,11 +29,11 @@ public class Community extends BmobObject implements Serializable {
         this.replyNum = replyNum;
     }
 
-    public List<String> getImagePaths() {
+    public ArrayList<String> getImagePaths() {
         return imagePaths;
     }
 
-    public void setImagePaths(List<String> imagePaths) {
+    public void setImagePaths(ArrayList<String> imagePaths) {
         this.imagePaths = imagePaths;
     }
 

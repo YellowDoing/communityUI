@@ -1,12 +1,16 @@
 package hg.yellowdoing.communityui;
 
 
+import android.app.Activity;
 import android.content.Context;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
@@ -18,6 +22,7 @@ import com.bumptech.glide.Glide;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,11 +37,11 @@ import cn.bmob.v3.listener.QueryListener;
 
 public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.CommunityViewHolder> {
 
-    private List<Community> mCommunityBeanList;
-    private Context mContext;
+    private ArrayList<Community> mCommunityBeanList;
+    private Activity mContext;
     private LayoutInflater mInflater;
 
-    public CommunityAdapter(Context context, List<Community> communityBeanList) {
+    public CommunityAdapter(Activity context, ArrayList<Community> communityBeanList) {
         mCommunityBeanList = communityBeanList;
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
@@ -47,64 +52,28 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
         notifyDataSetChanged();
     }
 
-    public void reset(List<Community> communityList) {
+    public void reset(ArrayList<Community> communityList) {
         mCommunityBeanList = communityList;
         notifyDataSetChanged();
     }
 
     @Override
     public CommunityViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new CommunityViewHolder(mInflater.inflate(R.layout.list_item_community, null));
+        return new CommunityViewHolder(mInflater.inflate(R.layout.list_item_community, parent,false ));
     }
 
     @Override
     public void onBindViewHolder(final CommunityViewHolder holder, int position) {
-
         final Community communityBean = mCommunityBeanList.get(position);
 
-        if (holder.mImageContainer.getChildCount() > 0)
-            holder.mImageContainer.removeAllViews();
+        if (communityBean.getImagePaths() == null || communityBean.getImagePaths().size() ==0)
+            holder.mRvImages.setVisibility(View.GONE);
 
-        if (communityBean.getImagePaths().size() > 0){
-            GridView gridView = new GridView(mContext);
-            gridView.setNumColumns(3);
-            gridView.setAdapter(new BaseAdapter() {
-                @Override
-                public int getCount() {
-                    return communityBean.getImagePaths().size();
-                }
-
-                @Override
-                public Object getItem(int position) {
-                    return null;
-                }
-
-                @Override
-                public long getItemId(int position) {
-                    return 0;
-                }
-
-                @Override
-                public View getView(int position, View convertView, ViewGroup parent) {
-                    ImageView view;
-                    if (convertView == null)
-                        view = new ImageView(mContext);
-                    else
-                        view = (ImageView) convertView;
-
-                    Glide.with(mContext).load(communityBean.getImagePaths().get(position)).centerCrop().into(view);
-
-
-                    return view;
-                }
-            });
-            holder.mImageContainer.addView(gridView);
-        }
-
+        if (communityBean.getImagePaths().size() > 0)
+           holder.mRvImages.setAdapter(new ImageAdapter(mContext,communityBean.getImagePaths()));
 
         BmobQuery<User> query = new BmobQuery<>();
         query.getObject(communityBean.getAuthor().getObjectId(), new QueryListener<User>() {
-
             @Override
             public void done(User user, BmobException e) {
                 if (e == null) {
@@ -126,10 +95,9 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
     }
 
     class CommunityViewHolder extends RecyclerView.ViewHolder {
-
         ImageView mIvAvatar;
         TextView mTvNickName, mTvContent, mTvCreateTime;
-        LinearLayout mImageContainer;
+        private RecyclerView mRvImages;
 
         public CommunityViewHolder(View itemView) {
             super(itemView);
@@ -137,13 +105,12 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
             mTvNickName = (TextView) itemView.findViewById(R.id.tv_name);
             mTvContent = (TextView) itemView.findViewById(R.id.tv_content);
             mTvCreateTime = (TextView) itemView.findViewById(R.id.tv_create_time);
-            mImageContainer = (LinearLayout) itemView.findViewById(R.id.ll_images_container);
+            mRvImages = (RecyclerView) itemView.findViewById(R.id.rv_images);
+            mRvImages.setLayoutManager(new GridLayoutManager(mContext,3));
         }
     }
 
-
     private String dateCompare(String createTime) {
-
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat todayFormat = new SimpleDateFormat("HH:mm");
         Date now = new Date();
