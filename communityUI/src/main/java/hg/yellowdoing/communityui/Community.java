@@ -18,16 +18,7 @@ public class Community extends BmobObject implements Serializable {
     private Integer likeNum;
     private Integer replyNum;
     private String content;
-    private boolean isLike;
 
-
-    public boolean isLike() {
-        return isLike;
-    }
-
-    public void setLike(boolean like) {
-        isLike = like;
-    }
 
     public Integer getReplyNum() {
         return replyNum;

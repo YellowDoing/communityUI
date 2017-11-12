@@ -33,6 +33,6 @@ dependencies {
     compile 'cn.bmob.android:bmob-sdk:3.5.8'
     compile 'me.iwf.photopicker:PhotoPicker:0.9.5@aar'
     compile 'com.ufreedom.uikit:FloatingTextLibrary:0.2.0'
-    compile 'com.ufreedom.uikit:FloatingViewLib:1.0.2'
+  
 
 }

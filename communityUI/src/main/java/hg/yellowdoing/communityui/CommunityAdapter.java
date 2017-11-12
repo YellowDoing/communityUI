@@ -88,29 +88,21 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
         holder.mTvLikeNum.setText(String.valueOf(communityBean.getLikeNum()));
         holder.mTvReplyNum.setText(String.valueOf(communityBean.getReplyNum()));
 
-        TextView textView = new TextView(mContext);
-        textView.setText("+1");
-
-        final FloatingElement builder = new FloatingBuilder()
-                .anchorView(holder.mTvLikeNum)
-                .targetView(textView)
-                .offsetX(100)
-                .offsetY(100)
-                .build();
 
 
         holder.mIvLike.setOnClickListener(new View.OnClickListener() {
+            boolean isLike;
+
             @Override
             public void onClick(View v) {
-                if (!communityBean.isLike()) {
+                if (!isLike) {
                     CommunityService.addLikeNum(communityBean, new CommunityService.Callback() {
                         @Override
                         public void callback() {
                             holder.mIvLike.setImageResource(R.drawable.ic_zan_hover);
                             holder.mTvLikeNum.setText(String.valueOf(communityBean.getLikeNum() + 1));
                             holder.mTvLikeNum.setTextColor(mContext.getResources().getColor(R.color.like_num));
-                            communityBean.setLike(true);
-                            new Floating(mContext).startFloating(builder);
+                            isLike = true;
                         }
                     });
                 } else {
@@ -120,7 +112,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
                             holder.mIvLike.setImageResource(R.drawable.ic_zan);
                             holder.mTvLikeNum.setText(String.valueOf(communityBean.getLikeNum()));
                             holder.mTvLikeNum.setTextColor(mContext.getResources().getColor(R.color.gray));
-                            communityBean.setLike(false);
+                            isLike = false;
                         }
                     });
                 }
