@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import cn.bingoogolapple.refreshlayout.BGANormalRefreshViewHolder;
 import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
@@ -45,16 +46,15 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
 
         //设置下拉刷新并开始刷新
         mRefreshLayout = (BGARefreshLayout) view.findViewById(R.id.bga_refresh_layout);
-        mRefreshLayout.setDelegate(CommunityFragment.this);
+        mRefreshLayout.setDelegate(this);
         BGANormalRefreshViewHolder refreshViewHolder = new BGANormalRefreshViewHolder(getActivity(), true);
         mRefreshLayout.setRefreshViewHolder(refreshViewHolder);
-        mRefreshLayout.setIsShowLoadingMoreView(true);
-        refreshViewHolder.setLoadingMoreText("加载中");
+
+
 
         mCommunityBeanList = new ArrayList<>();
         mAdapter = new CommunityAdapter(getActivity(), mCommunityBeanList);
         mRecyclerView.setAdapter(mAdapter);
-
         mRefreshLayout.beginRefreshing();
     }
 
@@ -62,19 +62,19 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
     @Override
     public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
         mCurrentPage = 0;
-        CommunityService.getCommunityList(mCurrentPage,this);
+        CommunityService.getCommunityList(mCurrentPage, this);
     }
 
     @Override
     public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
         mCurrentPage++;
-        CommunityService.getCommunityList(mCurrentPage,this);
-        return true;
+        CommunityService.getCommunityList(mCurrentPage, this);
+        return false;
     }
 
 
+    public void addCommunityList(ArrayList<Community> communityList) {
 
-    public void addCommunityList(ArrayList<Community> communityList){
         if (mCurrentPage == 0)
             mAdapter.reset(communityList);
         else

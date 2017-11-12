@@ -42,6 +42,12 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         ivAvatar.setOnClickListener(this);
         etNickName.setOnClickListener(this);
         findViewById(R.id.save).setOnClickListener(this);
+
+        User user = BmobUser.getCurrentUser(User.class);
+        if (user.getAvatar() != null)
+            etNickName.setText(user.getAvatar());
+        if (user.getAvatar() != null)
+            Glide.with(this).load(user.getAvatar()).centerCrop().into(ivAvatar);
     }
 
     @Override

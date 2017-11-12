@@ -2,30 +2,21 @@ package hg.yellowdoing.communityui;
 
 
 import android.app.Activity;
-import android.content.Context;
-import android.support.v7.widget.DividerItemDecoration;
+import android.media.Image;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.QueryListener;
@@ -68,8 +59,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
 
         if (communityBean.getImagePaths() == null || communityBean.getImagePaths().size() ==0)
             holder.mRvImages.setVisibility(View.GONE);
-
-        if (communityBean.getImagePaths().size() > 0)
+        else
            holder.mRvImages.setAdapter(new ImageAdapter(mContext,communityBean.getImagePaths()));
 
         BmobQuery<User> query = new BmobQuery<>();
@@ -87,6 +77,21 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
 
         holder.mTvCreateTime.setText(dateCompare(communityBean.getUpdatedAt()));
         holder.mTvContent.setText(communityBean.getContent());
+
+
+        holder.mIvLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                CommunityService.addLikeNum(communityBean, new CommunityService.Callback() {
+                    @Override
+                    public void callback() {
+                        holder.mIvLike.setImageResource(R.drawable.ic_zan_hover);
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -95,12 +100,16 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
     }
 
     class CommunityViewHolder extends RecyclerView.ViewHolder {
-        ImageView mIvAvatar;
-        TextView mTvNickName, mTvContent, mTvCreateTime;
+        ImageView mIvAvatar,mIvReply,mIvLike;
+        TextView mTvNickName, mTvContent, mTvCreateTime,mTvLikeNum,mTvReplyNum;
         private RecyclerView mRvImages;
 
         public CommunityViewHolder(View itemView) {
             super(itemView);
+            mIvReply = (ImageView) itemView.findViewById(R.id.iv_reply);
+            mIvLike = (ImageView) itemView.findViewById(R.id.iv_like);
+            mTvReplyNum = (TextView) itemView.findViewById(R.id.tv_reply_num);
+            mTvLikeNum = (TextView) itemView.findViewById(R.id.tv_like_num);
             mIvAvatar = (ImageView) itemView.findViewById(R.id.iv_avatar);
             mTvNickName = (TextView) itemView.findViewById(R.id.tv_name);
             mTvContent = (TextView) itemView.findViewById(R.id.tv_content);
@@ -111,7 +120,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
     }
 
     private String dateCompare(String createTime) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         SimpleDateFormat todayFormat = new SimpleDateFormat("HH:mm");
         Date now = new Date();
         try {

@@ -44,7 +44,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (BmobUser.getCurrentUser(User.class) != null)
-                    startActivity(new Intent(MainActivity.this, PostActivity.class));
+                    if (BmobUser.getCurrentUser(User.class).getAvatar() == null)
+                        startActivity(new Intent(MainActivity.this, UserInfoActivity.class));
+                    else
+                        startActivity(new Intent(MainActivity.this, PostActivity.class));
                 else
                     startActivity(new Intent(MainActivity.this,LoginActivity.class));
             }
