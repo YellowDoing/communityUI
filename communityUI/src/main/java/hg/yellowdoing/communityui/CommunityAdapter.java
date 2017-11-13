@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,20 +30,21 @@ import cn.bmob.v3.listener.QueryListener;
  * Created by YellowDing on 2017/10/18.
  */
 
-public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.CommunityViewHolder> {
+public class CommunityAdapter<T extends Serializable> extends RecyclerView.Adapter<CommunityAdapter.CommunityViewHolder> {
 
-    private ArrayList<Community> mCommunityBeanList;
+    private ArrayList<T> mDataList;
     private Activity mContext;
     private LayoutInflater mInflater;
-    private CommunityInterface<T>
+    private CommunityInterface<T>  mInterface;
 
-    public CommunityAdapter(Activity context, ArrayList<Community> communityBeanList) {
-        mCommunityBeanList = communityBeanList;
+    public CommunityAdapter(Activity context, ArrayList<T> dataList,CommunityInterface<T>  anInterface) {
+        mDataList = dataList;
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
+        mInterface = anInterface;
     }
 
-    public void add(List<Community> communityList) {
+/*    public void add(List<Community> communityList) {
         mCommunityBeanList.addAll(communityList);
         notifyDataSetChanged();
     }
@@ -50,7 +52,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
     public void reset(ArrayList<Community> communityList) {
         mCommunityBeanList = communityList;
         notifyDataSetChanged();
-    }
+    }*/
 
     @Override
     public CommunityViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -59,14 +61,15 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
 
     @Override
     public void onBindViewHolder(final CommunityViewHolder holder, int position) {
-        final Community communityBean = mCommunityBeanList.get(position);
+        final T data = mDataList.get(position);
+        ArrayList<String> imagePaths = mInterface.bindListItemView(data,holder.mIvAvatar,holder.mTvNickName,holder.mTvContent,holder.mTvReplyNum,holder.mTvLikeNum,holder.mTvCreateTime);
 
-        if (communityBean.getImagePaths() == null || communityBean.getImagePaths().size() == 0)
+        if (imagePaths == null || imagePaths.size() == 0)
             holder.mRvImages.setVisibility(View.GONE);
         else
-            holder.mRvImages.setAdapter(new ImageAdapter(mContext, communityBean.getImagePaths()));
+            holder.mRvImages.setAdapter(new ImageAdapter(mContext, imagePaths));
 
-        BmobQuery<User> query = new BmobQuery<>();
+ /*       BmobQuery<User> query = new BmobQuery<>();
         query.getObject(communityBean.getAuthor().getObjectId(), new QueryListener<User>() {
             @Override
             public void done(User user, BmobException e) {
@@ -77,37 +80,34 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
                 } else
                     Log.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
             }
-        });
+        });*/
 
-        holder.mTvCreateTime.setText(dateCompare(communityBean.getUpdatedAt()));
+/*        holder.mTvCreateTime.setText(dateCompare(communityBean.getUpdatedAt()));
         holder.mTvContent.setText(communityBean.getContent());
         holder.mTvLikeNum.setText(String.valueOf(communityBean.getLikeNum()));
-        holder.mTvReplyNum.setText(String.valueOf(communityBean.getReplyNum()));
+        holder.mTvReplyNum.setText(String.valueOf(communityBean.getReplyNum()));*/
+
+
+        if (mInterface.isLike(data)){
+            holder.mIvLike.setImageResource(R.drawable.ic_zan_hover);
+            holder.mTvLikeNum.setTextColor(mContext.getResources().getColor(R.color.like_num));
+        }else {
+            holder.mIvLike.setImageResource(R.drawable.ic_zan);
+            holder.mTvLikeNum.setTextColor(mContext.getResources().getColor(R.color.gray));
+        }
 
         holder.mIvLike.setOnClickListener(new View.OnClickListener() {
-            boolean isLike;
+
             @Override
             public void onClick(View v) {
-                if (!isLike) {
-                    CommunityService.addLikeNum(communityBean, new CommunityService.Callback() {
-                        @Override
-                        public void callback() {
-                            holder.mIvLike.setImageResource(R.drawable.ic_zan_hover);
-                            holder.mTvLikeNum.setText(String.valueOf(communityBean.getLikeNum() + 1));
-                            holder.mTvLikeNum.setTextColor(mContext.getResources().getColor(R.color.like_num));
-                            isLike = true;
-                        }
-                    });
+                if (mInterface.isLike(data)) {
+                    boolean isSuccess = mInterface.like(data);
+                    if (isSuccess)
+                        holder.mTvLikeNum.setText(String.valueOf(Integer.parseInt(holder.mTvLikeNum.getText().toString()) + 1));
                 } else {
-                    CommunityService.reduceLikeNum(communityBean, new CommunityService.Callback() {
-                        @Override
-                        public void callback() {
-                            holder.mIvLike.setImageResource(R.drawable.ic_zan);
-                            holder.mTvLikeNum.setText(String.valueOf(communityBean.getLikeNum()));
-                            holder.mTvLikeNum.setTextColor(mContext.getResources().getColor(R.color.gray));
-                            isLike = false;
-                        }
-                    });
+                    boolean isSuccess = mInterface.unLike(data);
+                    if (isSuccess)
+                         holder.mTvLikeNum.setText(String.valueOf(Integer.parseInt(holder.mTvLikeNum.getText().toString()) - 1));
                 }
             }
         });
@@ -116,18 +116,19 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
             @Override
             public void onClick(View v) {
                 mContext.startActivity(new Intent(mContext,ComminityDetialActivity.class)
-                .putExtra("communityBean",communityBean));
+                .putExtra("data",data));
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return mCommunityBeanList.size();
+        return mDataList.size();
     }
 
     class CommunityViewHolder extends RecyclerView.ViewHolder {
-        ImageView mIvAvatar, mIvReply, mIvLike;
+        CircleImageView mIvAvatar;
+        ImageView  mIvReply, mIvLike;
         TextView mTvNickName, mTvContent, mTvCreateTime, mTvLikeNum, mTvReplyNum;
         private RecyclerView mRvImages;
 
@@ -137,7 +138,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
             mIvLike = (ImageView) itemView.findViewById(R.id.iv_like);
             mTvReplyNum = (TextView) itemView.findViewById(R.id.tv_reply_num);
             mTvLikeNum = (TextView) itemView.findViewById(R.id.tv_like_num);
-            mIvAvatar = (ImageView) itemView.findViewById(R.id.iv_avatar);
+            mIvAvatar = (CircleImageView) itemView.findViewById(R.id.iv_avatar);
             mTvNickName = (TextView) itemView.findViewById(R.id.tv_name);
             mTvContent = (TextView) itemView.findViewById(R.id.tv_content);
             mTvCreateTime = (TextView) itemView.findViewById(R.id.tv_create_time);

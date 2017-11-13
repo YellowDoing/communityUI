@@ -13,9 +13,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobUser;
+import hg.yellowdoing.communityui.CircleImageView;
 import hg.yellowdoing.communityui.CommunityFragment;
 import hg.yellowdoing.communityui.CommunityInterface;
 import hg.yellowdoing.communityui.CommunityService;
@@ -32,8 +36,7 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_PHONE_STATE},1);
         }
-
-        Bmob.initialize(this,"4e32fa0aa1b2f5965a3321a664373fdc");
+        
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -79,4 +82,33 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
     }
 
 
+    @Override
+    public ArrayList loadDataList(int page) {
+        return null;
+    }
+
+    @Override
+    public ArrayList<String> bindListItemView(Object o, CircleImageView imgHead, TextView nickName, TextView content, TextView replyNum, TextView likeNum, TextView createTime) {
+        return null;
+    }
+
+    @Override
+    public boolean isLike(Object o) {
+        return false;
+    }
+
+    @Override
+    public boolean like(Object o) {
+        return false;
+    }
+
+    @Override
+    public boolean unLike(Object o) {
+        return false;
+    }
+
+    @Override
+    public boolean reply(Object o, String content) {
+        return false;
+    }
 }

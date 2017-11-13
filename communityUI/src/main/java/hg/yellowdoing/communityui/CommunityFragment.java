@@ -18,10 +18,11 @@ import android.widget.Toast;
 import cn.bingoogolapple.refreshlayout.BGANormalRefreshViewHolder;
 import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommunityFragment<T> extends Fragment implements BGARefreshLayout.BGARefreshLayoutDelegate {
+public class CommunityFragment<T extends Serializable> extends Fragment implements BGARefreshLayout.BGARefreshLayoutDelegate {
 
     private RecyclerView mRecyclerView;
     private View mView;
