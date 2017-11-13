@@ -1,5 +1,7 @@
 package hg.yellowdoing.communityui;
 
+import java.io.Serializable;
+
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 
@@ -7,11 +9,10 @@ import cn.bmob.v3.datatype.BmobFile;
  * Created by Administrator on 2017/11/8.
  */
 
-public class User extends BmobUser {
+public class User extends BmobUser implements Serializable{
 
     private String avatar;
     private String nickName;
-
 
     public String getAvatar() {
         return avatar;

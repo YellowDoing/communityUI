@@ -40,7 +40,11 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.list_item_image, parent, false);
         if (viewWH == 0)
-            viewWH = (getScreenWidth(mContext) -  dip2px(mContext, 85)) / 3;
+            if (mContext instanceof  ComminityDetialActivity)
+                viewWH = (getScreenWidth(mContext) -  dip2px(mContext, 29)) / 3;
+            else
+                viewWH = (getScreenWidth(mContext) -  dip2px(mContext, 85)) / 3;
+
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(viewWH,viewWH);
         view.setLayoutParams(params);
         return new ImageViewHolder(view);

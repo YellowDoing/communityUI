@@ -17,10 +17,12 @@ import android.view.MenuItem;
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobUser;
 import hg.yellowdoing.communityui.CommunityFragment;
+import hg.yellowdoing.communityui.CommunityInterface;
+import hg.yellowdoing.communityui.CommunityService;
 import hg.yellowdoing.communityui.PostActivity;
 import hg.yellowdoing.communityui.User;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CommunityInterface{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

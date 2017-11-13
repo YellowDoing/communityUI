@@ -1,11 +1,15 @@
 package hg.yellowdoing.communityui;
 
+import android.app.Activity;
+import android.content.Context;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,27 +21,45 @@ import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommunityFragment extends Fragment implements BGARefreshLayout.BGARefreshLayoutDelegate {
+public class CommunityFragment<T> extends Fragment implements BGARefreshLayout.BGARefreshLayoutDelegate {
 
     private RecyclerView mRecyclerView;
+    private View mView;
     private CommunityAdapter mAdapter;
-    private ArrayList<Community> mCommunityBeanList;
+    private ArrayList<T> mDataList;
     private BGARefreshLayout mRefreshLayout;
     private int mCurrentPage;
+    private CommunityInterface<T> mCommunityInterface;
+
+
+
+    public CommunityInterface getService() {
+        return mCommunityInterface;
+    }
+
+    public ArrayList<T> getDataList() {
+        return mDataList;
+    }
+
+    /**
+     * 必须要设置接口
+     * @param communityInterface
+     */
+    public void setCommunityInterface(CommunityInterface<T> communityInterface){
+        mCommunityInterface = communityInterface;
+        if (mRefreshLayout != null)
+            mRefreshLayout.beginRefreshing();
+    }
+
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_communicty, container, false);
-        initViw(view);
-        return view;
+        mView = inflater.inflate(R.layout.fragment_communicty, container, false);
+        initViw(mView);
+        return mView;
     }
 
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
 
     public void initViw(View view) {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_community);
@@ -49,32 +71,30 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
         mRefreshLayout.setDelegate(this);
         BGANormalRefreshViewHolder refreshViewHolder = new BGANormalRefreshViewHolder(getActivity(), true);
         mRefreshLayout.setRefreshViewHolder(refreshViewHolder);
+        mDataList = new ArrayList<>();
 
-
-
-        mCommunityBeanList = new ArrayList<>();
-        mAdapter = new CommunityAdapter(getActivity(), mCommunityBeanList);
-        mRecyclerView.setAdapter(mAdapter);
-        mRefreshLayout.beginRefreshing();
+      if (mCommunityInterface != null)
+          mRefreshLayout.beginRefreshing();
     }
 
 
     @Override
     public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
         mCurrentPage = 0;
-        CommunityService.getCommunityList(mCurrentPage, this);
+        mDataList = mCommunityInterface.loadDataList(mCurrentPage);
+         /*mAdapter = new CommunityAdapter(getActivity(), mCommunityBeanList);
+        mRecyclerView.setAdapter(mAdapter);
+        mRefreshLayout.beginRefreshing();*/
     }
 
     @Override
     public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
         mCurrentPage++;
-        CommunityService.getCommunityList(mCurrentPage, this);
+        mDataList.addAll(mCommunityInterface.loadDataList(mCurrentPage));
         return false;
     }
 
-
-    public void addCommunityList(ArrayList<Community> communityList) {
-
+ /*   public void addCommunityList(ArrayList<Community> communityList) {
         if (mCurrentPage == 0)
             mAdapter.reset(communityList);
         else
@@ -82,6 +102,6 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
         mRefreshLayout.endRefreshing();
         mRefreshLayout.endLoadingMore();
     }
-
+*/
 
 }

@@ -37,12 +37,14 @@
         <activity android:name=".LoginActivity"/>
         <activity android:name="hg.yellowdoing.communityui.PostActivity"/>
         <activity android:name="me.iwf.photopicker.PhotoPickerActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
-            />
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
 
         <activity android:name="me.iwf.photopicker.PhotoPagerActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"/>
+
         <activity android:name=".UserInfoActivity"/>
+
+        <activity android:name="hg.yellowdoing.communityui.ComminityDetialActivity"/>
     </application>
 
 </manifest>

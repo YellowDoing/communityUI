@@ -22,10 +22,10 @@ public class CommunityService {
         void callback();
     }
 
-
-    /**
+/*
+    *//**
      * 获取社区列表
-     */
+     *//*
     public static void getCommunityList(int page,final CommunityFragment fragment) {
         BmobQuery<Community> query = new BmobQuery<>();
         query.setSkip(10 * page);
@@ -39,7 +39,7 @@ public class CommunityService {
                     Log.d("bmob", "done: " + e.getMessage());
             }
         });
-    }
+    }*/
 
 
     /**

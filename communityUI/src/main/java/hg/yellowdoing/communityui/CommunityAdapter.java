@@ -3,6 +3,7 @@ package hg.yellowdoing.communityui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,11 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.ufreedom.floatingview.Floating;
-import com.ufreedom.floatingview.FloatingBuilder;
-import com.ufreedom.floatingview.FloatingElement;
-
-import org.w3c.dom.Text;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,13 +34,12 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
     private ArrayList<Community> mCommunityBeanList;
     private Activity mContext;
     private LayoutInflater mInflater;
-
+    private CommunityInterface<T>
 
     public CommunityAdapter(Activity context, ArrayList<Community> communityBeanList) {
         mCommunityBeanList = communityBeanList;
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
-
     }
 
     public void add(List<Community> communityList) {
@@ -78,6 +73,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
                 if (e == null) {
                     holder.mTvNickName.setText(user.getNickName());
                     Glide.with(mContext).load(user.getAvatar()).centerCrop().into(holder.mIvAvatar);
+                    communityBean.setAuthor(user);
                 } else
                     Log.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
             }
@@ -88,11 +84,8 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
         holder.mTvLikeNum.setText(String.valueOf(communityBean.getLikeNum()));
         holder.mTvReplyNum.setText(String.valueOf(communityBean.getReplyNum()));
 
-
-
         holder.mIvLike.setOnClickListener(new View.OnClickListener() {
             boolean isLike;
-
             @Override
             public void onClick(View v) {
                 if (!isLike) {
@@ -116,6 +109,14 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
                         }
                     });
                 }
+            }
+        });
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mContext.startActivity(new Intent(mContext,ComminityDetialActivity.class)
+                .putExtra("communityBean",communityBean));
             }
         });
     }
@@ -173,13 +174,4 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
             return "";
         }
     }
-
-    /**
-     * 根据手机的分辨率从dp的单位转成为px(像素)
-     */
-    private int dip2px(Context context, float dpValue) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (dpValue * scale + 0.5f);
-    }
-
 }
