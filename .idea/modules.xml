@@ -3,8 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BmobCommunity.iml" filepath="$PROJECT_DIR$/BmobCommunity.iml" />
+      <module fileurl="file://D:\Android\project\git\BmobCommunity\BmobCommunity.iml" filepath="D:\Android\project\git\BmobCommunity\BmobCommunity.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://D:\Android\project\git\BmobCommunity\app\app.iml" filepath="D:\Android\project\git\BmobCommunity\app\app.iml" />
       <module fileurl="file://$PROJECT_DIR$/communityUI/communityUI.iml" filepath="$PROJECT_DIR$/communityUI/communityUI.iml" />
+      <module fileurl="file://D:\Android\project\git\BmobCommunity\communityUI\communityUI.iml" filepath="D:\Android\project\git\BmobCommunity\communityUI\communityUI.iml" />
     </modules>
   </component>
 </project>

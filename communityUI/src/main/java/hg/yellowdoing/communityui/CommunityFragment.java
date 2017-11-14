@@ -26,32 +26,25 @@ public class CommunityFragment<T extends Serializable> extends Fragment implemen
 
     private RecyclerView mRecyclerView;
     private View mView;
-    private CommunityAdapter mAdapter;
-    private ArrayList<T> mDataList;
+    private CommunityAdapter<T> mAdapter;
     private BGARefreshLayout mRefreshLayout;
     private int mCurrentPage;
     private CommunityInterface<T> mCommunityInterface;
 
 
-
-    public CommunityInterface getService() {
-        return mCommunityInterface;
-    }
-
-    public ArrayList<T> getDataList() {
-        return mDataList;
-    }
-
     /**
      * 必须要设置接口
+     *
      * @param communityInterface
      */
-    public void setCommunityInterface(CommunityInterface<T> communityInterface){
+    public void setCommunityInterface(CommunityInterface<T> communityInterface) {
         mCommunityInterface = communityInterface;
-        if (mRefreshLayout != null)
+        if (mRefreshLayout != null) {
+            mAdapter = new CommunityAdapter<>(getActivity(), mCommunityInterface);
+            mRecyclerView.setAdapter(mAdapter);
             mRefreshLayout.beginRefreshing();
+        }
     }
-
 
     @Nullable
     @Override
@@ -72,37 +65,26 @@ public class CommunityFragment<T extends Serializable> extends Fragment implemen
         mRefreshLayout.setDelegate(this);
         BGANormalRefreshViewHolder refreshViewHolder = new BGANormalRefreshViewHolder(getActivity(), true);
         mRefreshLayout.setRefreshViewHolder(refreshViewHolder);
-        mDataList = new ArrayList<>();
 
-      if (mCommunityInterface != null)
-          mRefreshLayout.beginRefreshing();
+        if (mCommunityInterface != null) {
+            mAdapter = new CommunityAdapter<>(getActivity(), mCommunityInterface);
+            mRecyclerView.setAdapter(mAdapter);
+            mRefreshLayout.beginRefreshing();
+        }
     }
 
 
     @Override
     public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
         mCurrentPage = 0;
-        mDataList = mCommunityInterface.loadDataList(mCurrentPage);
-         /*mAdapter = new CommunityAdapter(getActivity(), mCommunityBeanList);
-        mRecyclerView.setAdapter(mAdapter);
-        mRefreshLayout.beginRefreshing();*/
+        mAdapter.set(mCommunityInterface.loadDataList(mCurrentPage));
+        mRefreshLayout.endRefreshing();
     }
 
     @Override
     public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
         mCurrentPage++;
-        mDataList.addAll(mCommunityInterface.loadDataList(mCurrentPage));
+        mAdapter.add(mCommunityInterface.loadDataList(mCurrentPage));
         return false;
     }
-
- /*   public void addCommunityList(ArrayList<Community> communityList) {
-        if (mCurrentPage == 0)
-            mAdapter.reset(communityList);
-        else
-            mAdapter.add(communityList);
-        mRefreshLayout.endRefreshing();
-        mRefreshLayout.endLoadingMore();
-    }
-*/
-
 }

@@ -28,31 +28,32 @@ import cn.bmob.v3.listener.QueryListener;
 
 /**
  * Created by YellowDing on 2017/10/18.
+ *
  */
 
 public class CommunityAdapter<T extends Serializable> extends RecyclerView.Adapter<CommunityAdapter.CommunityViewHolder> {
 
-    private ArrayList<T> mDataList;
+    private List<T> mDataList;
     private Activity mContext;
     private LayoutInflater mInflater;
     private CommunityInterface<T>  mInterface;
 
-    public CommunityAdapter(Activity context, ArrayList<T> dataList,CommunityInterface<T>  anInterface) {
-        mDataList = dataList;
+    public CommunityAdapter(Activity context,CommunityInterface<T>  anInterface) {
+        mDataList = new ArrayList<>();
         mContext = context;
         mInflater = LayoutInflater.from(mContext);
         mInterface = anInterface;
     }
 
-/*    public void add(List<Community> communityList) {
-        mCommunityBeanList.addAll(communityList);
+   public void add(List<T> list) {
+        mDataList.addAll(list);
         notifyDataSetChanged();
     }
 
-    public void reset(ArrayList<Community> communityList) {
-        mCommunityBeanList = communityList;
+    public void set(List<T> list) {
+        mDataList = list;
         notifyDataSetChanged();
-    }*/
+    }
 
     @Override
     public CommunityViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -60,8 +61,10 @@ public class CommunityAdapter<T extends Serializable> extends RecyclerView.Adapt
     }
 
     @Override
-    public void onBindViewHolder(final CommunityViewHolder holder, int position) {
+    public void onBindViewHolder(final CommunityAdapter.CommunityViewHolder holder, int position) {
         final T data = mDataList.get(position);
+
+        //接口返回的图片地址
         ArrayList<String> imagePaths = mInterface.bindListItemView(data,holder.mIvAvatar,holder.mTvNickName,holder.mTvContent,holder.mTvReplyNum,holder.mTvLikeNum,holder.mTvCreateTime);
 
         if (imagePaths == null || imagePaths.size() == 0)
@@ -69,25 +72,7 @@ public class CommunityAdapter<T extends Serializable> extends RecyclerView.Adapt
         else
             holder.mRvImages.setAdapter(new ImageAdapter(mContext, imagePaths));
 
- /*       BmobQuery<User> query = new BmobQuery<>();
-        query.getObject(communityBean.getAuthor().getObjectId(), new QueryListener<User>() {
-            @Override
-            public void done(User user, BmobException e) {
-                if (e == null) {
-                    holder.mTvNickName.setText(user.getNickName());
-                    Glide.with(mContext).load(user.getAvatar()).centerCrop().into(holder.mIvAvatar);
-                    communityBean.setAuthor(user);
-                } else
-                    Log.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
-            }
-        });*/
-
-/*        holder.mTvCreateTime.setText(dateCompare(communityBean.getUpdatedAt()));
-        holder.mTvContent.setText(communityBean.getContent());
-        holder.mTvLikeNum.setText(String.valueOf(communityBean.getLikeNum()));
-        holder.mTvReplyNum.setText(String.valueOf(communityBean.getReplyNum()));*/
-
-
+        //接口返回该贴是否已喜欢
         if (mInterface.isLike(data)){
             holder.mIvLike.setImageResource(R.drawable.ic_zan_hover);
             holder.mTvLikeNum.setTextColor(mContext.getResources().getColor(R.color.like_num));
@@ -96,6 +81,7 @@ public class CommunityAdapter<T extends Serializable> extends RecyclerView.Adapt
             holder.mTvLikeNum.setTextColor(mContext.getResources().getColor(R.color.gray));
         }
 
+        //接口回调点赞点击事件
         holder.mIvLike.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -107,16 +93,17 @@ public class CommunityAdapter<T extends Serializable> extends RecyclerView.Adapt
                 } else {
                     boolean isSuccess = mInterface.unLike(data);
                     if (isSuccess)
-                         holder.mTvLikeNum.setText(String.valueOf(Integer.parseInt(holder.mTvLikeNum.getText().toString()) - 1));
+                        holder.mTvLikeNum.setText(String.valueOf(Integer.parseInt(holder.mTvLikeNum.getText().toString()) - 1));
                 }
             }
         });
 
+        //接口回调帖子点击事件
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mContext.startActivity(new Intent(mContext,ComminityDetialActivity.class)
-                .putExtra("data",data));
+                        .putExtra("data",data));
             }
         });
     }

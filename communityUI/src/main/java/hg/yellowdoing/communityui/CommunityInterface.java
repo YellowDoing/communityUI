@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface CommunityInterface<T> {
 
-    ArrayList<T> loadDataList(int page);
+    List<T> loadDataList(int page);
 
     ArrayList<String> bindListItemView(T t, CircleImageView imgHead, TextView nickName,TextView content,TextView replyNum,TextView likeNum,TextView createTime);
 

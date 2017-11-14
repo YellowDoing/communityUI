@@ -16,10 +16,15 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import cn.bmob.v3.Bmob;
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 import hg.yellowdoing.communityui.CircleImageView;
+import hg.yellowdoing.communityui.Community;
 import hg.yellowdoing.communityui.CommunityFragment;
 import hg.yellowdoing.communityui.CommunityInterface;
 import hg.yellowdoing.communityui.CommunityService;
@@ -83,8 +88,16 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
 
 
     @Override
-    public ArrayList loadDataList(int page) {
-        return null;
+    public List loadDataList(int page) {
+        BmobQuery<List<Community>> query = new BmobQuery<>();
+        query.findObjects(new FindListener<List<Community>>() {
+
+            @Override
+            public void done(List<List<Community>> list, BmobException e) {
+                return list;
+            }
+        });
+
     }
 
     @Override
