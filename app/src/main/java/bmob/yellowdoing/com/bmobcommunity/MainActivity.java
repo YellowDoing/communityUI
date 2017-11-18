@@ -55,8 +55,9 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (AVUser.getCurrentUser(User.class) != null)
-                    if (AVUser.getCurrentUser(User.class).getAvatar() == null)
+                User user = AVUser.getCurrentUser(User.class);
+                if (user != null)
+                    if (user.getAvatar() == null || user.getNickName() == null)
                         startActivity(new Intent(MainActivity.this, UserInfoActivity.class));
                     else
                         startActivity(new Intent(MainActivity.this, PostActivity.class));
@@ -146,10 +147,10 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
         avCommunity.saveInBackground(new SaveCallback() {
             @Override
             public void done(AVException e) {
-                if (e == null){
+                if (e == null) {
                     subsriber.onComplete();
                     Toast.makeText(MainActivity.this, "发帖成功", Toast.LENGTH_SHORT).show();
-                }else
+                } else
                     Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
