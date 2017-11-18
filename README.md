@@ -1,2 +1,2 @@
-# BmobCommunity
-基于Bmob搭建的一个朋友圈
+# communityUI
+可快速集成的一个朋友圈界面
