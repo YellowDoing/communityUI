@@ -20,7 +20,7 @@ import hg.yellowdoing.communityui.CommunityFragment;
 import hg.yellowdoing.communityui.CommunityInterface;
 
 
-public class MainActivity extends AppCompatActivity implements CommunityInterface<Community> {
+public class MainActivity extends AppCompatActivity implements CommunityInterface {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,44 +77,27 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
 
 
     @Override
-    public List<Community> loadDataList(int page) {
+    public void loadCommunityList(CommunitySubsriber subsriber, int page) {
 
-
-     /*   BmobQuery<List<Community>> query = new BmobQuery<>();
-        query.findObjects(new FindListener<List<Community>>() {
-
-            @Override
-            public void done(List<List<Community>> list, BmobException e) {
-                return list;
-            }
-        });*/
-
-
-        return new ArrayList<>();
     }
 
     @Override
-    public ArrayList<String> bindListItemView(Community community, CircleImageView imgHead, TextView nickName, TextView content, TextView replyNum, TextView likeNum, TextView createTime) {
-        return null;
+    public void reply(Subsriber subsriber, String communityId, String content) {
+
     }
 
     @Override
-    public boolean isLike(Community community) {
-        return false;
+    public void loadComments(CommentSubsriber subsriber, String communityId, int page) {
+
     }
 
     @Override
-    public boolean like(Community community) {
-        return false;
+    public void like(Subsriber subsriber, String communityId) {
+
     }
 
     @Override
-    public boolean unLike(Community community) {
-        return false;
-    }
+    public void unLike(Subsriber subsriber, String communityId) {
 
-    @Override
-    public boolean reply(Community community, String content) {
-        return false;
     }
 }

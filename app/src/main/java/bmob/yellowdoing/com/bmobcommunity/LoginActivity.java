@@ -12,10 +12,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.SaveListener;
-import hg.yellowdoing.communityui.User;
-
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private EditText mEtUsername, mEtPassword;
@@ -40,15 +36,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bt_login: //登陆
-                login();
+             //   login();
                 break;
             case R.id.tv_regitser: //注册
-                register();
+             //   register();
                 break;
         }
 
     }
-
+/*
     private void login() {
         User user = new User();
         user.setUsername(mEtUsername.getText().toString());
@@ -97,5 +93,5 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                     }
                 }).show();
-    }
+    }*/
 }

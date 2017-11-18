@@ -1,11 +1,10 @@
 package hg.yellowdoing.communityui;
 
-import android.app.Activity;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,21 +12,15 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
 import cn.bingoogolapple.refreshlayout.BGANormalRefreshViewHolder;
 import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
-import io.reactivex.functions.Consumer;
-
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-
 import static hg.yellowdoing.communityui.CommunityFragment.CommunityFragmentReceiver.ACTION;
+
 
 public class CommunityFragment extends Fragment implements BGARefreshLayout.BGARefreshLayoutDelegate {
 
@@ -39,7 +32,6 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
     CommunityInterface mCommunityInterface;
     private CommunityFragmentReceiver mReceiver;
     private LocalBroadcastManager mManager;
-
 
     /**
      * 必须要设置接口
@@ -99,7 +91,7 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
                 mAdapter.set(communityList);
                 mRefreshLayout.endRefreshing();
             }
-        },mCurrentPage);
+        }, mCurrentPage);
     }
 
     @Override
@@ -110,7 +102,7 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
             public void onComplete(List<Community> communityList) {
                 mAdapter.add(communityList);
             }
-        },mCurrentPage);
+        }, mCurrentPage);
         return false;
     }
 
@@ -122,6 +114,7 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
 
     public class CommunityFragmentReceiver extends BroadcastReceiver {
         public static final String ACTION = "communityFragment";
+
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getStringExtra(ACTION);
@@ -130,10 +123,10 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
                     @Override
                     public void onComplete(List<Comment> communityList) {
                         Bundle bundle = new Bundle();
-                        bundle.putSerializable("comments",(Serializable) communityList);
+                        bundle.putSerializable("comments", (Serializable) communityList);
                         mManager.sendBroadcast(new Intent(ComminityDetialActivity.CommunityDetailReceiver.ACTION).putExtras(bundle));
                     }
-                },intent.getStringExtra("communityId"), intent.getIntExtra("page", 1));
+                }, intent.getStringExtra("communityId"), intent.getIntExtra("page", 1));
             }
         }
     }

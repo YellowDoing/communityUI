@@ -12,22 +12,15 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 
 import java.io.File;
-
-import cn.bmob.v3.BmobUser;
-import cn.bmob.v3.datatype.BmobFile;
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.UpdateListener;
-import cn.bmob.v3.listener.UploadFileListener;
-import hg.yellowdoing.communityui.User;
 import me.iwf.photopicker.PhotoPicker;
 
 /**
- * Created by ganhuang on 2017/11/8.
+ * Created by YellowDoing on 2017/11/8.
  */
 
 public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener {
 
-
+/*
     private ImageView ivAvatar;
     private EditText etNickName;
     private BmobFile mBmobFile;
@@ -49,26 +42,6 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         if (user.getAvatar() != null)
             Glide.with(this).load(user.getAvatar()).centerCrop().into(ivAvatar);
     }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-
-            case R.id.iv_avatar:
-                PhotoPicker.builder()
-                        .setPreviewEnabled(true)
-                        .setShowGif(false)
-                        .setPhotoCount(1)
-                        .setShowCamera(false)
-                        .setGridColumnCount(3)
-                        .start(this, PhotoPicker.REQUEST_CODE);
-                break;
-            case R.id.save:
-                uploadAvatar();
-                break;
-        }
-    }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -117,5 +90,24 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             });
         }else
             saveUser();
+    }*/
+@Override
+public void onClick(View v) {
+    switch (v.getId()) {
+
+        case R.id.iv_avatar:
+            PhotoPicker.builder()
+                    .setPreviewEnabled(true)
+                    .setShowGif(false)
+                    .setPhotoCount(1)
+                    .setShowCamera(false)
+                    .setGridColumnCount(3)
+                    .start(this, PhotoPicker.REQUEST_CODE);
+            break;
+        case R.id.save:
+           // uploadAvatar();
+            break;
     }
+}
+
 }
