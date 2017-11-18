@@ -12,6 +12,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.LogInCallback;
+import com.avos.avoscloud.SignUpCallback;
+
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private EditText mEtUsername, mEtPassword;
@@ -36,22 +41,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bt_login: //登陆
-             //   login();
+                login();
                 break;
             case R.id.tv_regitser: //注册
-             //   register();
+                 register();
                 break;
         }
 
     }
-/*
+
     private void login() {
-        User user = new User();
-        user.setUsername(mEtUsername.getText().toString());
-        user.setPassword(mEtPassword.getText().toString());
-        user.login(new SaveListener<Object>() {
+        User.logInInBackground(mEtUsername.getText().toString(), mEtPassword.getText().toString(), new LogInCallback<AVUser>() {
             @Override
-            public void done(Object o, BmobException e) {
+            public void done(AVUser avUser, AVException e) {
                 if (e == null) {
                     Toast.makeText(LoginActivity.this, "登陆成功", Toast.LENGTH_SHORT).show();
                     finish();
@@ -71,12 +73,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .setNegativeButton("注册", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        User user = new User();
+                        User  user = new User ();
                         user.setUsername(username.getText().toString());
                         user.setPassword(password.getText().toString());
-                        user.signUp(new SaveListener<Object>() {
+                        user.signUpInBackground(new SignUpCallback() {
                             @Override
-                            public void done(Object o, BmobException e) {
+                            public void done(AVException e) {
                                 if (e == null) {
                                     Toast.makeText(LoginActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
                                     finish();
@@ -93,5 +95,5 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                     }
                 }).show();
-    }*/
+    }
 }

@@ -144,7 +144,7 @@ public class ComminityDetialActivity extends Activity implements View.OnClickLis
                 mRefreshLayout.endRefreshing();
             } else
                 mAdapter.add((List<Comment>) intent.getExtras().get("comments"));
-
         }
     }
+
 }

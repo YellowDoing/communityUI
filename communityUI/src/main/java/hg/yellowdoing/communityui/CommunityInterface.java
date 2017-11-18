@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Observable;
 
 /**
  * Created by YellowDoing on 2017/11/13.
@@ -25,6 +24,7 @@ public interface CommunityInterface{
 
     void unLike(Subsriber subsriber,String communityId);
 
+    void post(Subsriber subsriber,ArrayList<String> imagePaths,String content);
 
    interface CommunitySubsriber{
        void onComplete(List<Community> communityList);

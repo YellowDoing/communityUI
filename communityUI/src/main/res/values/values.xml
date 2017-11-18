@@ -2,8 +2,7 @@
 <resources>
 
     <!-- string -->
-
-    <string name="app_name">Community</string>
+  <string name="app_name">communitUI</string>
     <string name="post_title">发帖</string>
     <string name="hint_content">输入内容...</string>
     <string name="submit">发布</string>
