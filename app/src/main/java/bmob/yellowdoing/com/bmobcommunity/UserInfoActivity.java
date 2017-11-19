@@ -6,21 +6,21 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVFile;
-import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.AVUser;
-import com.avos.avoscloud.SaveCallback;
 import com.bumptech.glide.Glide;
+import com.droi.sdk.DroiCallback;
+import com.droi.sdk.DroiError;
+import com.droi.sdk.DroiProgressCallback;
+import com.droi.sdk.core.DroiFile;
+import com.droi.sdk.core.DroiUser;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
+
 
 import me.iwf.photopicker.PhotoPicker;
 
@@ -33,7 +33,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
     private ImageView ivAvatar;
     private EditText etNickName;
-    private AVFile mFile;
+    private DroiFile mFile;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,7 +46,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
         etNickName.setOnClickListener(this);
         findViewById(R.id.save).setOnClickListener(this);
 
-        User user = AVUser.getCurrentUser(User.class);
+        User user = DroiUser.getCurrentUser(User.class);
         if (user.getNickName() != null)
             etNickName.setText(user.getNickName());
         if (user.getAvatar() != null)
@@ -60,7 +60,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             switch (requestCode) {
                 case PhotoPicker.REQUEST_CODE:  //选择图片返回
                     String path = data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS).get(0);
-                    mFile = new AVFile("headImg.png", Bitmap2Bytes(decodeSampledBitmapFromPath(path, 80, 80)));
+                    mFile = new DroiFile(Bitmap2Bytes(decodeSampledBitmapFromPath(path, 80, 80)));
                     Glide.with(this).load(path).centerCrop().into(ivAvatar);
                     break;
             }
@@ -69,39 +69,33 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
 
     private void saveUser() {
-
-        User user = AVUser.getCurrentUser(User.class);
-        if (mFile != null) {
-            user.setAvatar(mFile.getUrl());
-            user.setFileId(mFile.getObjectId());
-        }
+        User user = DroiUser.getCurrentUser(User.class);
+        if (mFile != null)
+            user.setAvatar(mFile);
 
         user.setNickName(etNickName.getText().toString());
-        user.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(AVException e) {
-                if (e == null) {
-                    Toast.makeText(UserInfoActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
-                    finish();
-                } else
-                    Toast.makeText(UserInfoActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        DroiError error = user.save();
+        if (error.isOk()) {
+            Toast.makeText(UserInfoActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
+            finish();
+        } else
+            Toast.makeText(UserInfoActivity.this, error.getAppendedMessage(), Toast.LENGTH_SHORT).show();
     }
 
     private void uploadAvatar() {
         if (mFile != null) {
-            mFile.saveInBackground(new SaveCallback() {
+            mFile.saveInBackground(new DroiCallback<Boolean>() {
                 @Override
-                public void done(AVException e) {
-                    if (e == null) {
+                public void result(Boolean aBoolean, DroiError droiError) {
+                    if (aBoolean)
                         saveUser();
-                        AVObject object = new AVObject();
-                        object.setObjectId(AVUser.getCurrentUser(User.class).getFileId());
-                        AVFile.withAVObject(object).deleteInBackground();
-
-                    } else
-                        Toast.makeText(UserInfoActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(UserInfoActivity.this, droiError.getAppendedMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }, new DroiProgressCallback() {
+                @Override
+                public void progress(Object o, long l, long l1) {
+                    Log.d("aaaa", "上传了: " + (int)((l*100)/l1) + "%");
                 }
             });
         } else
@@ -111,7 +105,6 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-
             case R.id.iv_avatar:
                 PhotoPicker.builder()
                         .setPreviewEnabled(true)
@@ -140,8 +133,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
             // Calculate the largest inSampleSize value that is a power of 2 and keeps both
             // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) > reqHeight
-                    && (halfWidth / inSampleSize) > reqWidth) {
+            while ((halfHeight / inSampleSize) > reqHeight && (halfWidth / inSampleSize) > reqWidth) {
                 inSampleSize *= 2;
             }
         }
@@ -165,7 +157,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
     public static byte[] Bitmap2Bytes(Bitmap bm) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 75, baos);
+        bm.compress(Bitmap.CompressFormat.PNG, 95, baos);
         return baos.toByteArray();
     }
 

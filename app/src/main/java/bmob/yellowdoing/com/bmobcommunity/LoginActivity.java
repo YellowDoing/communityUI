@@ -11,11 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVUser;
-import com.avos.avoscloud.LogInCallback;
-import com.avos.avoscloud.SignUpCallback;
+import com.droi.sdk.DroiError;
+import com.droi.sdk.core.DroiUser;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -44,23 +41,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 login();
                 break;
             case R.id.tv_regitser: //注册
-                 register();
+                register();
                 break;
         }
-
     }
 
     private void login() {
-        User.logInInBackground(mEtUsername.getText().toString(), mEtPassword.getText().toString(), new LogInCallback<AVUser>() {
-            @Override
-            public void done(AVUser avUser, AVException e) {
-                if (e == null) {
-                    Toast.makeText(LoginActivity.this, "登陆成功", Toast.LENGTH_SHORT).show();
-                    finish();
-                } else
-                    Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        DroiError error = new DroiError();
+        User user = DroiUser.login(mEtUsername.getText().toString(), mEtPassword.getText().toString(), User.class, error);
+        if (error.isOk() && user != null && user.isAuthorized()) {
+            Toast.makeText(LoginActivity.this, "登陆成功", Toast.LENGTH_SHORT).show();
+            finish();
+        }else
+            Toast.makeText(LoginActivity.this, error.getAppendedMessage(), Toast.LENGTH_SHORT).show();
+
     }
 
     private void register() {
@@ -73,20 +67,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .setNegativeButton("注册", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        User  user = new User ();
-                        user.setUsername(username.getText().toString());
+                        User user = new User();
+                        user.setUserId(username.getText().toString());
                         user.setPassword(password.getText().toString());
-                        user.signUpInBackground(new SignUpCallback() {
-                            @Override
-                            public void done(AVException e) {
-                                if (e == null) {
-                                    Toast.makeText(LoginActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
-                                    finish();
-                                } else
-                                    Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
+                        DroiError result = user.signUp();
+                        if (result.isOk()) {
+                            Toast.makeText(LoginActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }else Toast.makeText(LoginActivity.this, result.getAppendedMessage(), Toast.LENGTH_SHORT).show();
                     }
                 })
                 .setPositiveButton("取消", new DialogInterface.OnClickListener() {

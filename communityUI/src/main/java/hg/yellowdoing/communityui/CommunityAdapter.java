@@ -98,7 +98,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
 
             @Override
             public void onClick(View v) {
-                if (community.isLike()) mInterface.like(new CommunityInterface.Subsriber() {
+                if (!community.isLike()) mInterface.like(new CommunityInterface.Subsriber() {
                         @Override
                         public void onComplete() {
                             holder.mTvLikeNum.setText(String.valueOf(Integer.parseInt(holder.mTvLikeNum.getText().toString()) + 1));

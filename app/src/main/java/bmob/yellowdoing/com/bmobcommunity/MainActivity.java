@@ -9,24 +9,37 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVFile;
-import com.avos.avoscloud.AVOSCloud;
-import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.AVUser;
-import com.avos.avoscloud.SaveCallback;
+import com.droi.sdk.DroiCallback;
+import com.droi.sdk.DroiError;
+import com.droi.sdk.core.Core;
+import com.droi.sdk.core.DroiFile;
+import com.droi.sdk.core.DroiObject;
+import com.droi.sdk.core.DroiPermission;
+import com.droi.sdk.core.DroiQuery;
+import com.droi.sdk.core.DroiUser;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import hg.yellowdoing.communityui.Community;
 import hg.yellowdoing.communityui.CommunityFragment;
 import hg.yellowdoing.communityui.CommunityInterface;
 import hg.yellowdoing.communityui.PostActivity;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okio.BufferedSink;
 
 
 public class MainActivity extends AppCompatActivity implements CommunityInterface {
@@ -36,9 +49,10 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //初始化LeanCloud
-        AVObject.registerSubclass(AVCommunity.class);
-        AVOSCloud.initialize(this, "UOpnozjpc85rVU44XhinIGBv-gzGzoHsz", "HbE1EQrjc2kPSnV3COrlUyBz");
+        //初始化Droibaas SDK
+        DroiObject.registerCustomClass(User.class);
+        DroiObject.registerCustomClass(MyCommunity.class);
+        Core.initialize(this);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, 1);
@@ -55,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                User user = AVUser.getCurrentUser(User.class);
+                User user = DroiUser.getCurrentUser(User.class);
                 if (user != null)
                     if (user.getAvatar() == null || user.getNickName() == null)
                         startActivity(new Intent(MainActivity.this, UserInfoActivity.class));
@@ -77,11 +91,13 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            AVUser.logOut();
+            User user = DroiUser.getCurrentUser(User.class);
+            if (user != null)
+                user.logout();
             startActivity(new Intent(this, LoginActivity.class));
             return true;
         } else if (id == R.id.user_info) {
-            if (AVUser.getCurrentUser(User.class) != null)
+            if (DroiUser.getCurrentUser(User.class) != null)
                 startActivity(new Intent(this, UserInfoActivity.class));
             else
                 startActivity(new Intent(this, LoginActivity.class));
@@ -92,7 +108,27 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
 
     @Override
     public void loadCommunityList(CommunitySubsriber subsriber, int page) {
-
+        DroiQuery query = DroiQuery.Builder.newBuilder()
+                .query(MyCommunity.class)
+                .build();
+        DroiError error = new DroiError();
+        List<MyCommunity> result = query.runQuery(error);
+        List<Community> communities = new ArrayList<>();
+        if (error.isOk()) {
+            for (int i = 0; i < result.size(); i++) {
+                MyCommunity myCommunity = result.get(i);
+                communities.add(new Community()
+                        .setId(myCommunity.getObjectId())
+                        .setContent(myCommunity.getContent())
+                        .setReplyNum(myCommunity.getReplyNum())
+                        .setLike(myCommunity.getLikePersons().contains(DroiUser.getCurrentUser(User.class).getObjectId()))
+                        .setImagePaths(myCommunity.getImagePaths())
+                        .setLikeNum(myCommunity.getLikePersons().size())
+                        .setNickName(myCommunity.getAuthor().getNickName())
+                        .setAvatar(myCommunity.getAuthor().getAvatar().getUri().toString().replaceAll("\\\\","")));
+            }
+            subsriber.onComplete(communities);
+        }
     }
 
     @Override
@@ -106,7 +142,45 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
     }
 
     @Override
-    public void like(Subsriber subsriber, String communityId) {
+    public void like(Subsriber subsriber, final String communityId) {
+        Log.d("aaaa", "这个方法执行了: " );
+
+       new Thread(new Runnable() {
+           @Override
+           public void run() {
+               OkHttpClient okHttpClient = new OkHttpClient();
+
+               RequestBody body = new RequestBody() {
+                   @Override
+                   public MediaType contentType() {
+                       return  MediaType.parse("application/json");
+                   }
+
+                   @Override
+                   public void writeTo(BufferedSink sink) throws IOException {
+                        sink.write(("{\"likePersons\" :{\"__op\":\"Add\",\"objects\":["+ DroiUser.getCurrentUser(User.class).getObjectId()+"]}}").getBytes());
+                   }
+               };
+               Request request = new Request.Builder()
+                       .url("https://api.droibaas.com/rest/objects/v2/Community/" + communityId)
+                       .addHeader("X-Droi-AppID","3gltmbzh_tAPpNFDH-LvwZAA5ngH31dHlQBkjYMm")
+                       .addHeader("X-Droi-Api-Key","xlENdT2MuUHSyCOyERoZVT7dvAwjiUq6Wld88Vx1-JTDrmHcWyShvOTihijks2lr")
+                       .addHeader("Content-Type","application/json").patch(body).build();
+
+               okHttpClient.newCall(request).enqueue(new Callback() {
+                   @Override
+                   public void onFailure(Call call, IOException e) {
+                       Log.d("aaaa", "onResponse: " + e.getMessage());
+                   }
+
+                   @Override
+                   public void onResponse(Call call, Response response) throws IOException {
+                       Log.d("aaaa", "onResponse: " + response.body().string());
+                   }
+               });
+
+           }
+       }).start();
 
     }
 
@@ -117,42 +191,44 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
 
     @Override
     public void post(final Subsriber subsriber, final ArrayList<String> imagePaths, String content) {
-        final AVCommunity avCommunity = new AVCommunity();
-        avCommunity.setContent(content);
-        avCommunity.setAuthor(User.getCurrentUser(User.class));
-        final List<String> list = new ArrayList<>();
-        String imgName = AVUser.getCurrentUser(User.class).getObjectId() + ".png";
+        final MyCommunity myCommunity = new MyCommunity();
+        DroiPermission permission = new DroiPermission();
+        permission.setPublicWritePermission(true);
+        myCommunity.setPermission(permission);
+        myCommunity.setContent(content);
+        myCommunity.setAuthor(User.getCurrentUser(User.class));
+        myCommunity.setReplyNum(0);
+        myCommunity.setLikePersons(new ArrayList<String>());
+        final ArrayList<String> list = new ArrayList<>();
         if (imagePaths.size() == 0)
-            saveCommunity(subsriber, avCommunity);
+            saveCommunity(subsriber, myCommunity);
         else
             for (int i = 0; i < imagePaths.size(); i++) {
-                final AVFile avFile = new AVFile(imgName, UserInfoActivity.Bitmap2Bytes(UserInfoActivity.decodeSampledBitmapFromPath(imagePaths.get(i), 80, 80)));
-                avFile.saveInBackground(new SaveCallback() {
+                final DroiFile file = new DroiFile(UserInfoActivity.Bitmap2Bytes(UserInfoActivity.decodeSampledBitmapFromPath(imagePaths.get(i), 120, 120)));
+                file.saveInBackground(new DroiCallback<Boolean>() {
                     @Override
-                    public void done(AVException e) {
-                        if (e == null) {
-                            list.add(avFile.getUrl());
+                    public void result(Boolean aBoolean, DroiError droiError) {
+                        if (aBoolean) {
+                            list.add(file.getUri().toString().replaceAll("\\\\",""));
                             if (list.size() == imagePaths.size()) {
-                                avCommunity.setImagePaths(list);
-                                saveCommunity(subsriber, avCommunity);
+                                myCommunity.setImagePaths(list);
+                                saveCommunity(subsriber, myCommunity);
                             }
                         } else
-                            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, droiError.getTicket(), Toast.LENGTH_SHORT).show();
                     }
                 });
+
             }
     }
 
-    private void saveCommunity(final Subsriber subsriber, AVCommunity avCommunity) {
-        avCommunity.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(AVException e) {
-                if (e == null) {
-                    subsriber.onComplete();
-                    Toast.makeText(MainActivity.this, "发帖成功", Toast.LENGTH_SHORT).show();
-                } else
-                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void saveCommunity(final Subsriber subsriber, MyCommunity myCommunity) {
+        DroiError error = myCommunity.save();
+        if (error.isOk()) {
+            subsriber.onComplete();
+            Toast.makeText(MainActivity.this, "发帖成功", Toast.LENGTH_SHORT).show();
+        } else
+            Toast.makeText(MainActivity.this, error.getAppendedMessage(), Toast.LENGTH_SHORT).show();
+
     }
 }

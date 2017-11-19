@@ -4,7 +4,7 @@ buildscript {
     repositories {
         jcenter()
         maven {
-            url "http://mvn.leancloud.cn/nexus/content/repositories/public"
+            url "https://github.com/DroiBaaS/DroiBaaS-SDK-Android/raw/master/"
         }
     }
     dependencies {
@@ -18,7 +18,7 @@ allprojects {
     repositories {
         jcenter()
         maven {
-            url "http://mvn.leancloud.cn/nexus/content/repositories/public"
+            url "https://github.com/DroiBaaS/DroiBaaS-SDK-Android/raw/master/"
         }
 
     }

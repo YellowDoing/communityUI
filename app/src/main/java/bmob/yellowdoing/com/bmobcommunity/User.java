@@ -1,39 +1,32 @@
 package bmob.yellowdoing.com.bmobcommunity;
-
-import com.avos.avoscloud.AVUser;
+import com.droi.sdk.core.DroiExpose;
+import com.droi.sdk.core.DroiFile;
+import com.droi.sdk.core.DroiUser;
 
 /**
  * Created by YellowDoing on 2017/11/18.
  */
 
-public class User extends AVUser{
+public class User extends DroiUser {
 
-
-    private String avatar;
+    @DroiExpose
+    private DroiFile avatar;
+    @DroiExpose
     private String nickName;
-    private String fileId;
 
-    public String getFileId() {
-        return  this.getString("fileId");
+    public DroiFile getAvatar() {
+        return avatar;
     }
 
-    public void setFileId(String fileId) {
-        this.put("fileId",fileId);
-    }
-
-    public String getAvatar() {
-        return  this.getString("avatar");
-    }
-
-    public void setAvatar(String avatar) {
-        this.put("avatar",avatar);
+    public void setAvatar(DroiFile avatar) {
+        this.avatar = avatar;
     }
 
     public String getNickName() {
-        return  this.getString("nickName");
+        return nickName;
     }
 
     public void setNickName(String nickName) {
-        this.put("nickName",nickName);
+        this.nickName = nickName;
     }
 }

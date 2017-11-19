@@ -3,7 +3,7 @@ package hg.yellowdoing.communityui;
 import java.io.Serializable;
 
 /**
- * Created by YellowDoing on 2017/11/18.
+ * Created by Administrator on 2017/11/18.
  */
 
 public class Comment implements Serializable {
