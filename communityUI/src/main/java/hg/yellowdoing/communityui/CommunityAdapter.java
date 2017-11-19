@@ -102,6 +102,8 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
                         @Override
                         public void onComplete() {
                             holder.mTvLikeNum.setText(String.valueOf(Integer.parseInt(holder.mTvLikeNum.getText().toString()) + 1));
+                            holder.mTvLikeNum.setTextColor(mContext.getResources().getColor(R.color.like_num));
+                            holder.mIvLike.setImageResource(R.drawable.ic_zan_hover);
                             community.setLike(true);
                         }
                     }, community.getId());
@@ -109,6 +111,8 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
                         @Override
                         public void onComplete() {
                             holder.mTvLikeNum.setText(String.valueOf(Integer.parseInt(holder.mTvLikeNum.getText().toString()) - 1));
+                            holder.mTvLikeNum.setTextColor(mContext.getResources().getColor(R.color.gray));
+                            holder.mIvLike.setImageResource(R.drawable.ic_zan);
                             community.setLike(false);
                         }
                     }, community.getId());

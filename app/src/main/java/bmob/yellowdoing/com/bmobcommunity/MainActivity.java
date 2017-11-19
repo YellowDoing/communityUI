@@ -24,6 +24,9 @@ import com.droi.sdk.core.DroiPermission;
 import com.droi.sdk.core.DroiQuery;
 import com.droi.sdk.core.DroiUser;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -125,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
                         .setImagePaths(myCommunity.getImagePaths())
                         .setLikeNum(myCommunity.getLikePersons().size())
                         .setNickName(myCommunity.getAuthor().getNickName())
-                        .setAvatar(myCommunity.getAuthor().getAvatar().getUri().toString().replaceAll("\\\\","")));
+                        .setAvatar(myCommunity.getAuthor().getAvatar().getUri().toString().replaceAll("\\\\", "")));
             }
             subsriber.onComplete(communities);
         }
@@ -143,50 +146,70 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
 
     @Override
     public void like(Subsriber subsriber, final String communityId) {
-        Log.d("aaaa", "这个方法执行了: " );
-
-       new Thread(new Runnable() {
-           @Override
-           public void run() {
-               OkHttpClient okHttpClient = new OkHttpClient();
-
-               RequestBody body = new RequestBody() {
-                   @Override
-                   public MediaType contentType() {
-                       return  MediaType.parse("application/json");
-                   }
-
-                   @Override
-                   public void writeTo(BufferedSink sink) throws IOException {
-                        sink.write(("{\"likePersons\" :{\"__op\":\"Add\",\"objects\":["+ DroiUser.getCurrentUser(User.class).getObjectId()+"]}}").getBytes());
-                   }
-               };
-               Request request = new Request.Builder()
-                       .url("https://api.droibaas.com/rest/objects/v2/Community/" + communityId)
-                       .addHeader("X-Droi-AppID","3gltmbzh_tAPpNFDH-LvwZAA5ngH31dHlQBkjYMm")
-                       .addHeader("X-Droi-Api-Key","xlENdT2MuUHSyCOyERoZVT7dvAwjiUq6Wld88Vx1-JTDrmHcWyShvOTihijks2lr")
-                       .addHeader("Content-Type","application/json").patch(body).build();
-
-               okHttpClient.newCall(request).enqueue(new Callback() {
-                   @Override
-                   public void onFailure(Call call, IOException e) {
-                       Log.d("aaaa", "onResponse: " + e.getMessage());
-                   }
-
-                   @Override
-                   public void onResponse(Call call, Response response) throws IOException {
-                       Log.d("aaaa", "onResponse: " + response.body().string());
-                   }
-               });
-
-           }
-       }).start();
+        likeOrUnlike(subsriber, communityId, "Add");
 
     }
 
     @Override
-    public void unLike(Subsriber subsriber, String communityId) {
+    public void unLike(Subsriber subsriber, final String communityId) {
+        likeOrUnlike(subsriber, communityId, "Remove");
+    }
 
+    private void likeOrUnlike(final Subsriber subsriber, final String communityId, final String action) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                OkHttpClient okHttpClient = new OkHttpClient();
+
+                RequestBody body = new RequestBody() {
+                    @Override
+                    public MediaType contentType() {
+                        return MediaType.parse("application/json");
+                    }
+
+                    @Override
+                    public void writeTo(BufferedSink sink) throws IOException {
+                        sink.write(("{\"likePersons\" :{\"__op\":\"" + action + "\",\"objects\":[\"" + DroiUser.getCurrentUser(User.class).getObjectId() + "\"]}}").getBytes());
+                    }
+                };
+                Request request = new Request.Builder()
+                        .url("https://api.droibaas.com/rest/objects/v2/Community/" + communityId)
+                        .addHeader("X-Droi-AppID", "3gltmbzh_tAPpNFDH-LvwZAA5ngH31dHlQBkjYMm")
+                        .addHeader("X-Droi-Api-Key", "ZtpNEPYAg5t8mqzZdyfz3UK9d26YBEqMzCYPji8SUMfWBqHqFthWVdiQrQtGtLvL")
+                        .addHeader("Content-Type", "application/json").patch(body).build();
+
+                okHttpClient.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call,final IOException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onResponse(Call call, final Response response) throws IOException {
+                        final String resp = response.body().string();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(resp);
+                                    if (jsonObject.getInt("Code") == 0) subsriber.onComplete();
+                                    else Toast.makeText(MainActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+
+
+                    }
+                });
+            }
+        }).start();
     }
 
     @Override
@@ -209,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
                     @Override
                     public void result(Boolean aBoolean, DroiError droiError) {
                         if (aBoolean) {
-                            list.add(file.getUri().toString().replaceAll("\\\\",""));
+                            list.add(file.getUri().toString().replaceAll("\\\\", ""));
                             if (list.size() == imagePaths.size()) {
                                 myCommunity.setImagePaths(list);
                                 saveCommunity(subsriber, myCommunity);
