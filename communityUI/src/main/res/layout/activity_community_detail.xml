@@ -48,16 +48,16 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/dp_8"
+                android:paddingTop="@dimen/dp_16"
                 android:layout_marginLeft="@dimen/dp_16"
                 android:layout_marginRight="@dimen/dp_16"
+                android:layout_marginBottom="@dimen/dp_8"
                 android:orientation="horizontal">
 
                 <hg.yellowdoing.communityui.CircleImageView
                     android:id="@+id/iv_head"
-
-                    android:layout_width="@dimen/dp_48"
-                    android:layout_height="@dimen/dp_48" />
+                    android:layout_width="@dimen/dp_40"
+                    android:layout_height="@dimen/dp_40" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -84,7 +84,8 @@
                 android:id="@+id/tv_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/dp_16"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:textSize="15sp"
                 android:layout_marginRight="@dimen/dp_16"
                 android:layout_marginTop="@dimen/dp_8"
                 android:textColor="@color/black" />
@@ -93,9 +94,10 @@
                 android:id="@+id/rv_images"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="13dp"
-                android:layout_marginRight="@dimen/dp_16"
+                android:layout_marginLeft="@dimen/dp_20"
+                android:layout_marginRight="@dimen/dp_20"
                 android:layout_marginTop="@dimen/dp_8" />
+<!--
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -143,7 +145,8 @@
                         android:textColor="@color/gray" />
                 </LinearLayout>
 
-            </LinearLayout>
+
+            </LinearLayout>-->
 
             <View
                 android:layout_width="match_parent"
@@ -155,7 +158,6 @@
                 android:id="@+id/rv_replys"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-
 
         </LinearLayout>
 

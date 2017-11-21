@@ -16,7 +16,7 @@ public interface CommunityInterface{
 
     void loadCommunityList(CommunitySubsriber subsriber,int page);
 
-    void reply(Subsriber subsriber,String communityId,String content);
+    void reply(Subsriber subsriber,String communityId,String commentId,String content);
 
     void loadComments(CommentSubsriber subsriber,String communityId,int page);
 

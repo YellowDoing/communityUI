@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import hg.yellowdoing.communityui.Comment;
 import hg.yellowdoing.communityui.Community;
 import hg.yellowdoing.communityui.CommunityFragment;
 import hg.yellowdoing.communityui.CommunityInterface;
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
         //初始化Droibaas SDK
         DroiObject.registerCustomClass(User.class);
         DroiObject.registerCustomClass(MyCommunity.class);
+        DroiObject.registerCustomClass(MyComment.class);
         Core.initialize(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -136,8 +138,20 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
     }
 
     @Override
-    public void reply(Subsriber subsriber, String communityId, String content) {
-
+    public void reply(Subsriber subsriber, String communityId,String commentId, String content) {
+        if ( !getSharedPreferences("user", MODE_PRIVATE).getBoolean("isLogin", false))
+            return;
+        MyComment comment = new MyComment();
+        DroiPermission droiPermission = new DroiPermission();
+        droiPermission.setPublicWritePermission(true);
+        droiPermission.setPublicReadPermission(true);
+        comment.setContent(content);
+        comment.setCommunityId(communityId);
+        comment.setCommentId(commentId);
+        comment.setAuthor(DroiUser.getCurrentUser(User.class));
+        DroiError error = comment.save();
+        if (error.isOk()) subsriber.onComplete();
+        else Log.d("aaaa", "reply: " + error.getAppendedMessage());//Toast.makeText(this, "回复失败", Toast.LENGTH_SHORT).show();
     }
 
     @Override

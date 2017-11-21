@@ -124,7 +124,7 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
                     public void onComplete(List<Comment> communityList) {
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("comments", (Serializable) communityList);
-                        mManager.sendBroadcast(new Intent(ComminityDetialActivity.CommunityDetailReceiver.ACTION).putExtras(bundle));
+                        mManager.sendBroadcast(new Intent(CommunityDetialActivity.CommunityDetailReceiver.ACTION).putExtras(bundle));
                     }
                 }, intent.getStringExtra("communityId"), intent.getIntExtra("page", 1));
             }else if (action.equals("post")){
@@ -141,6 +141,13 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
                         },0);
                     }
                 },community.getImagePaths(),community.getContent());
+            }else if (action.equals("reply")){
+                mCommunityInterface.reply(new CommunityInterface.Subsriber() {
+                    @Override
+                    public void onComplete() {
+                        mManager.sendBroadcast(new Intent(CommunityDetialActivity.CommunityDetailReceiver.ACTION).putExtra("isReply",true));
+                    }
+                },intent.getStringExtra("communityId"),intent.getStringExtra("commentId"),intent.getStringExtra("content"));
             }
         }
     }

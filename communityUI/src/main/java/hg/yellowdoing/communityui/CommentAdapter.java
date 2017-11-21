@@ -20,11 +20,13 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyVie
     private Context mContext;
     private LayoutInflater mInflater;
     private List<Comment> mComments;
+    private Callback mCallback;
 
-    public CommentAdapter(Context context,List<Comment> comments) {
+    public CommentAdapter(Context context, List<Comment> comments, Callback callback) {
         mContext = context;
         mComments = comments;
         mInflater = LayoutInflater.from(mContext);
+        mCallback = callback;
     }
 
     public void add(List<Comment> list){
@@ -44,10 +46,16 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyVie
 
     @Override
     public void onBindViewHolder(ReplyViewHolder holder, int position) {
-        Comment comment = mComments.get(position);
+        final Comment comment = mComments.get(position);
         Glide.with(mContext).load(comment.getAvatar()).centerCrop().into(holder.mCvAvatar);
         holder.mTvContent.setText(comment.getContent());
         holder.mTvNickName.setText(comment.getNickName());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCallback.getCommentId(comment.getNickName(),comment.getId());
+            }
+        });
     }
 
     @Override
@@ -66,5 +74,9 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyVie
             mTvNickName = (TextView) itemView.findViewById(R.id.tv_nick_name);
             mTvContent = (TextView) itemView.findViewById(R.id.tv_content);
         }
+    }
+
+    interface Callback{
+        void getCommentId(String name,String id);
     }
 }

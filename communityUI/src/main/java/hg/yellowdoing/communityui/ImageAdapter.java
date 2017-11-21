@@ -2,7 +2,6 @@ package hg.yellowdoing.communityui;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -15,7 +14,6 @@ import android.widget.LinearLayout;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import me.iwf.photopicker.PhotoPreview;
 
@@ -40,7 +38,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
     public ImageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.list_item_image, parent, false);
         if (viewWH == 0)
-            if (mContext instanceof ComminityDetialActivity)
+            if (mContext instanceof CommunityDetialActivity)
                 viewWH = (getScreenWidth(mContext) - dip2px(mContext, 29)) / 3;
             else
                 viewWH = (getScreenWidth(mContext) - dip2px(mContext, 72)) / 3;
