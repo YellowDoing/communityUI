@@ -17,6 +17,7 @@ import com.droi.sdk.DroiCallback;
 import com.droi.sdk.DroiError;
 import com.droi.sdk.DroiProgressCallback;
 import com.droi.sdk.core.DroiFile;
+import com.droi.sdk.core.DroiPermission;
 import com.droi.sdk.core.DroiUser;
 
 import java.io.ByteArrayOutputStream;
@@ -84,6 +85,9 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
 
     private void uploadAvatar() {
         if (mFile != null) {
+            DroiPermission permission = new DroiPermission();
+            permission.setPublicReadPermission(true);
+            mFile.setPermission(permission);
             mFile.saveInBackground(new DroiCallback<Boolean>() {
                 @Override
                 public void result(Boolean aBoolean, DroiError droiError) {

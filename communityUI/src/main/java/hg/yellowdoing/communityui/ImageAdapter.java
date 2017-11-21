@@ -43,7 +43,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
             if (mContext instanceof ComminityDetialActivity)
                 viewWH = (getScreenWidth(mContext) - dip2px(mContext, 29)) / 3;
             else
-                viewWH = (getScreenWidth(mContext) - dip2px(mContext, 85)) / 3;
+                viewWH = (getScreenWidth(mContext) - dip2px(mContext, 72)) / 3;
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(viewWH, viewWH);
         view.setLayoutParams(params);

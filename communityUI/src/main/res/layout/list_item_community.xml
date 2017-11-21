@@ -6,6 +6,7 @@
     android:paddingBottom="@dimen/dp_8"
     android:paddingLeft="@dimen/dp_12"
     android:paddingRight="@dimen/dp_12"
+    style="@style/ripple"
     android:paddingTop="@dimen/dp_12">
 
 
@@ -37,22 +38,21 @@
                 android:textSize="15sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="1dp"
                 android:textColor="@color/black" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/container"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/dp_8"
+                android:layout_height="wrap_content">
 
         </LinearLayout>
     </LinearLayout>
 
 
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_marginLeft="45dp"
-        android:layout_marginRight="@dimen/dp_16"
-        android:layout_marginTop="@dimen/dp_8"
-        android:layout_height="wrap_content">
 
 
     </LinearLayout>

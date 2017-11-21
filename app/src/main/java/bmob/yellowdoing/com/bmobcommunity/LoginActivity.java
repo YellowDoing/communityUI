@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.droi.sdk.DroiError;
+import com.droi.sdk.core.DroiPermission;
 import com.droi.sdk.core.DroiUser;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
@@ -51,6 +52,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         User user = DroiUser.login(mEtUsername.getText().toString(), mEtPassword.getText().toString(), User.class, error);
         if (error.isOk() && user != null && user.isAuthorized()) {
             Toast.makeText(LoginActivity.this, "登陆成功", Toast.LENGTH_SHORT).show();
+            getSharedPreferences("user",MODE_PRIVATE).edit().putBoolean("isLogin",true).apply();
             finish();
         }else
             Toast.makeText(LoginActivity.this, error.getAppendedMessage(), Toast.LENGTH_SHORT).show();
@@ -70,9 +72,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         User user = new User();
                         user.setUserId(username.getText().toString());
                         user.setPassword(password.getText().toString());
+                        DroiPermission permission = new DroiPermission();
+                        permission.setPublicReadPermission(true);
+                        user.setPermission(permission);
                         DroiError result = user.signUp();
                         if (result.isOk()) {
                             Toast.makeText(LoginActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
+                            getSharedPreferences("user",MODE_PRIVATE).edit().putBoolean("isLogin",true).apply();
                             finish();
                         }else Toast.makeText(LoginActivity.this, result.getAppendedMessage(), Toast.LENGTH_SHORT).show();
                     }

@@ -28,7 +28,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import hg.yellowdoing.communityui.Community;
@@ -57,10 +59,6 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
         DroiObject.registerCustomClass(MyCommunity.class);
         Core.initialize(this);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, 1);
-        }
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -72,13 +70,13 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                User user = DroiUser.getCurrentUser(User.class);
-                if (user != null)
+                if (getSharedPreferences("user", MODE_PRIVATE).getBoolean("isLogin", false)) {
+                    User user = DroiUser.getCurrentUser(User.class);
                     if (user.getAvatar() == null || user.getNickName() == null)
                         startActivity(new Intent(MainActivity.this, UserInfoActivity.class));
                     else
                         startActivity(new Intent(MainActivity.this, PostActivity.class));
-                else
+                } else
                     startActivity(new Intent(MainActivity.this, LoginActivity.class));
             }
         });
@@ -94,9 +92,8 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            User user = DroiUser.getCurrentUser(User.class);
-            if (user != null)
-                user.logout();
+            DroiUser.getCurrentUser().logout();
+            getSharedPreferences("user", MODE_PRIVATE).edit().putBoolean("isLogin", false).apply();
             startActivity(new Intent(this, LoginActivity.class));
             return true;
         } else if (id == R.id.user_info) {
@@ -113,6 +110,9 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
     public void loadCommunityList(CommunitySubsriber subsriber, int page) {
         DroiQuery query = DroiQuery.Builder.newBuilder()
                 .query(MyCommunity.class)
+                .limit(20)
+                .offset((page - 1) * 20)
+                .orderBy("_CreationTime", false)
                 .build();
         DroiError error = new DroiError();
         List<MyCommunity> result = query.runQuery(error);
@@ -124,10 +124,11 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
                         .setId(myCommunity.getObjectId())
                         .setContent(myCommunity.getContent())
                         .setReplyNum(myCommunity.getReplyNum())
-                        .setLike(myCommunity.getLikePersons().contains(DroiUser.getCurrentUser(User.class).getObjectId()))
+                        .setLike(DroiUser.getCurrentUser(User.class) != null && myCommunity.getLikePersons().contains(DroiUser.getCurrentUser(User.class).getObjectId()))
                         .setImagePaths(myCommunity.getImagePaths())
                         .setLikeNum(myCommunity.getLikePersons().size())
                         .setNickName(myCommunity.getAuthor().getNickName())
+                        .setCreateTime(dateCompare(myCommunity.getCreationTime().getTime()))
                         .setAvatar(myCommunity.getAuthor().getAvatar().getUri().toString().replaceAll("\\\\", "")));
             }
             subsriber.onComplete(communities);
@@ -180,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
 
                 okHttpClient.newCall(request).enqueue(new Callback() {
                     @Override
-                    public void onFailure(Call call,final IOException e) {
+                    public void onFailure(Call call, final IOException e) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -198,14 +199,13 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
                                 try {
                                     JSONObject jsonObject = new JSONObject(resp);
                                     if (jsonObject.getInt("Code") == 0) subsriber.onComplete();
-                                    else Toast.makeText(MainActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                                    else
+                                        Toast.makeText(MainActivity.this, response.message(), Toast.LENGTH_SHORT).show();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
                             }
                         });
-
-
                     }
                 });
             }
@@ -216,6 +216,7 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
     public void post(final Subsriber subsriber, final ArrayList<String> imagePaths, String content) {
         final MyCommunity myCommunity = new MyCommunity();
         DroiPermission permission = new DroiPermission();
+        permission.setPublicReadPermission(true);
         permission.setPublicWritePermission(true);
         myCommunity.setPermission(permission);
         myCommunity.setContent(content);
@@ -241,7 +242,6 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
                             Toast.makeText(MainActivity.this, droiError.getTicket(), Toast.LENGTH_SHORT).show();
                     }
                 });
-
             }
     }
 
@@ -252,6 +252,28 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
             Toast.makeText(MainActivity.this, "发帖成功", Toast.LENGTH_SHORT).show();
         } else
             Toast.makeText(MainActivity.this, error.getAppendedMessage(), Toast.LENGTH_SHORT).show();
+
+    }
+
+    private String dateCompare(long createTime) {
+        Date now = new Date();
+        long day = (now.getTime() - createTime) / (86400000);
+        if (day == 0) {
+            long time = (now.getTime() - createTime) / 1000;
+            if (time < 60)
+                return "刚刚";
+            if (60 <= time && time < 3600)
+                return (time / 60) + "分钟前";
+            else
+                return (time / 3600) + "小时前";
+        } else if (day == 1)
+            return "昨天";
+        else if (day > 1 && day < 31)
+            return day + "天前";
+        else if (day >= 31 && day < 365)
+            return (day / 30) + "个月前";
+        else
+            return (day / 365) + "年前";
 
     }
 }

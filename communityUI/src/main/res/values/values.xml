@@ -42,4 +42,9 @@
         <attr name="civ_border_overlay" format="boolean" />
         <attr name="civ_fill_color" format="color" />
     </declare-styleable>
+
+  <style name="ripple">
+    <item name="android:clickable">true</item>
+    <item name="android:background">?android:attr/selectableItemBackground</item>
+  </style>
 </resources>

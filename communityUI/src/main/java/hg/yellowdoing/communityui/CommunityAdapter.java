@@ -9,11 +9,13 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -43,6 +45,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
         mInflater = LayoutInflater.from(mContext);
         mInterface = anInterface;
     }
+
 
     public void add(List<Community> list) {
         mDataList.addAll(list);
@@ -74,6 +77,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
             RecyclerView recyclerView = new RecyclerView(mContext);
             recyclerView.setLayoutManager(new GridLayoutManager(mContext, 3));
             recyclerView.setAdapter(new ImageAdapter(mContext, imagePaths));
+            // TODO: 2017/11/21 空白区域点击部分需要做处理 
             holder.mContainer.addView(recyclerView);
         }
 
@@ -82,7 +86,11 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
         holder.mTvNickName.setText(isNull(community.getNickName()));
         Glide.with(mContext).load(isNull(community.getAvatar())).centerCrop().into(holder.mIvAvatar);
         holder.mTvLikeNum.setText(String.valueOf(community.getLikeNum()));
-        holder.mTvContent.setText(isNull(community.getContent()));
+        if (isNull(community.getContent()).trim().equals("")) holder.mTvContent.setVisibility(View.GONE);
+        else {
+            holder.mTvContent.setVisibility(View.VISIBLE);
+            holder.mTvContent.setText(community.getContent());
+        }
 
         //接口返回该贴是否已喜欢
         if (community.isLike()) {
@@ -135,6 +143,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
                 // TODO: 2017/11/15 回复功能
             }
         });
+        
     }
 
     @Override
@@ -165,14 +174,4 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Comm
     private String isNull(String str) {
         return str == null ? "" : str;
     }
-
-    private ArrayList<String> isNull(ArrayList<String> list) {
-        return list == null ? new ArrayList<String>() : list;
-    }
-
-    private Integer isNull(Integer i) {
-        return i == null ? 0 : i;
-    }
-
-
 }

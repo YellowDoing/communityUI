@@ -128,11 +128,17 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
                     }
                 }, intent.getStringExtra("communityId"), intent.getIntExtra("page", 1));
             }else if (action.equals("post")){
-                Community community = (Community)intent.getSerializableExtra("community");
+                final Community community = (Community)intent.getSerializableExtra("community");
                 mCommunityInterface.post(new CommunityInterface.Subsriber() {
                     @Override
                     public void onComplete() {
                         mManager.sendBroadcast(new Intent(PostActivity.PostReceiver.ACTION));
+                        mCommunityInterface.loadCommunityList(new CommunityInterface.CommunitySubsriber() {
+                            @Override
+                            public void onComplete(List<Community> communityList) {
+                                mAdapter.set(communityList);
+                            }
+                        },0);
                     }
                 },community.getImagePaths(),community.getContent());
             }
