@@ -150,8 +150,16 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
         comment.setCommentId(commentId);
         comment.setAuthor(DroiUser.getCurrentUser(User.class));
         DroiError error = comment.save();
-        if (error.isOk()) subsriber.onComplete();
-        else Log.d("aaaa", "reply: " + error.getAppendedMessage());//Toast.makeText(this, "回复失败", Toast.LENGTH_SHORT).show();
+        if (error.isOk()){
+            subsriber.onComplete();
+            likeOrUnlike(new Subsriber() {
+                @Override
+                public void onComplete() {
+
+                }
+            },communityId,"replyNum","Increment");
+        }
+        else Toast.makeText(this, "回复失败", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -161,16 +169,16 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
 
     @Override
     public void like(Subsriber subsriber, final String communityId) {
-        likeOrUnlike(subsriber, communityId, "Add");
+        likeOrUnlike(subsriber,communityId,"likePersons" , "Add");
 
     }
 
     @Override
     public void unLike(Subsriber subsriber, final String communityId) {
-        likeOrUnlike(subsriber, communityId, "Remove");
+        likeOrUnlike(subsriber,communityId,"likePersons", "Remove");
     }
 
-    private void likeOrUnlike(final Subsriber subsriber, final String communityId, final String action) {
+    private void likeOrUnlike(final Subsriber subsriber, final String communityId,final String name,final String action) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -184,7 +192,12 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
 
                     @Override
                     public void writeTo(BufferedSink sink) throws IOException {
-                        sink.write(("{\"likePersons\" :{\"__op\":\"" + action + "\",\"objects\":[\"" + DroiUser.getCurrentUser(User.class).getObjectId() + "\"]}}").getBytes());
+                        if (name.equals("likePersons"))
+                            sink.write(("{\""+name+"\" :{\"__op\":\"" + action + "\",\"objects\":[\"" + DroiUser.getCurrentUser(User.class).getObjectId() + "\"]}}").getBytes());
+                        else
+                            sink.write(("{\""+name+"\" :{\"__op\":\"" + action + "\",\"amount\":1}}").getBytes());
+
+
                     }
                 };
                 Request request = new Request.Builder()
@@ -213,8 +226,7 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
                                 try {
                                     JSONObject jsonObject = new JSONObject(resp);
                                     if (jsonObject.getInt("Code") == 0) subsriber.onComplete();
-                                    else
-                                        Toast.makeText(MainActivity.this, response.message(), Toast.LENGTH_SHORT).show();
+                                    else Toast.makeText(MainActivity.this, jsonObject.getString("Message"), Toast.LENGTH_SHORT).show();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }

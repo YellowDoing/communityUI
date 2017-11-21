@@ -24,7 +24,7 @@ public class MyCommunity extends DroiObject {
     @DroiExpose
     private String nickName;
     @DroiExpose
-    private Integer replyNum;
+    private int replyNum;
     @DroiExpose
     private List<String> likePersons;
 
@@ -45,14 +45,13 @@ public class MyCommunity extends DroiObject {
         this.nickName = nickName;
     }
 
-    public Integer getReplyNum() {
+    public int getReplyNum() {
         return replyNum;
     }
 
-    public void setReplyNum(Integer replyNum) {
+    public void setReplyNum(int replyNum) {
         this.replyNum = replyNum;
     }
-
 
     public ArrayList<String> getImagePaths() {
         return imagePaths;
