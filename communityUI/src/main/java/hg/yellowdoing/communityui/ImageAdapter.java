@@ -39,7 +39,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
         View view = mInflater.inflate(R.layout.list_item_image, parent, false);
         if (viewWH == 0)
             if (mContext instanceof CommunityDetialActivity)
-                viewWH = (getScreenWidth(mContext) - dip2px(mContext, 29)) / 3;
+                viewWH = (getScreenWidth(mContext) - dip2px(mContext, 40)) / 3;
             else
                 viewWH = (getScreenWidth(mContext) - dip2px(mContext, 72)) / 3;
 

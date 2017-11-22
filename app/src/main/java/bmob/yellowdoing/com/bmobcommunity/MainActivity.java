@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.droi.sdk.DroiCallback;
 import com.droi.sdk.DroiError;
 import com.droi.sdk.core.Core;
+import com.droi.sdk.core.DroiCondition;
 import com.droi.sdk.core.DroiFile;
 import com.droi.sdk.core.DroiObject;
 import com.droi.sdk.core.DroiPermission;
@@ -138,47 +139,71 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
     }
 
     @Override
-    public void reply(Subsriber subsriber, String communityId,String commentId, String content) {
-        if ( !getSharedPreferences("user", MODE_PRIVATE).getBoolean("isLogin", false))
+    public void reply(Subsriber subsriber, String communityId, String commentId, String content) {
+        if (!getSharedPreferences("user", MODE_PRIVATE).getBoolean("isLogin", false)) {
+            startActivity(new Intent(this, LoginActivity.class));
             return;
+        }
         MyComment comment = new MyComment();
         DroiPermission droiPermission = new DroiPermission();
-        droiPermission.setPublicWritePermission(true);
         droiPermission.setPublicReadPermission(true);
+        comment.setPermission(droiPermission);
         comment.setContent(content);
         comment.setCommunityId(communityId);
         comment.setCommentId(commentId);
         comment.setAuthor(DroiUser.getCurrentUser(User.class));
         DroiError error = comment.save();
-        if (error.isOk()){
+        if (error.isOk()) {
             subsriber.onComplete();
             likeOrUnlike(new Subsriber() {
                 @Override
                 public void onComplete() {
 
                 }
-            },communityId,"replyNum","Increment");
-        }
-        else Toast.makeText(this, "回复失败", Toast.LENGTH_SHORT).show();
+            }, communityId, "replyNum", "Increment");
+        } else Toast.makeText(this, "回复失败", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void loadComments(CommentSubsriber subsriber, String communityId, int page) {
+        DroiCondition cond = DroiCondition.cond("communityId", DroiCondition.Type.EQ, communityId);
+
+        DroiQuery query = DroiQuery.Builder.newBuilder()
+                .where(cond)
+                .query(MyComment.class)
+                .build();
+        DroiError error = new DroiError();
+        List<MyComment> myComments = query.runQuery(error);
+        if (error.isOk()) {
+            List<Comment> comments = new ArrayList<>();
+            for (int i = 0; i < myComments.size(); i++) {
+                Comment comment1 = new Comment();
+                comment1.setAvatar(myComments.get(i).getAuthor().getAvatar().getUri().toString().replaceAll("\\\\", ""));
+                comment1.setContent(myComments.get(i).getContent());
+                comment1.setId(myComments.get(i).getObjectId());
+                comment1.setNickName(myComments.get(i).getAuthor().getNickName());
+                comment1.setParentId(myComments.get(i).getCommentId());
+                comments.add(comment1);
+            }
+
+            subsriber.onComplete(comments);
+        } else
+            Log.d("aaaa", "loadComments: " + error.toString());//Toast.makeText(this, error.getTicket(), Toast.LENGTH_SHORT).show();
 
     }
 
     @Override
     public void like(Subsriber subsriber, final String communityId) {
-        likeOrUnlike(subsriber,communityId,"likePersons" , "Add");
+        likeOrUnlike(subsriber, communityId, "likePersons", "Add");
 
     }
 
     @Override
     public void unLike(Subsriber subsriber, final String communityId) {
-        likeOrUnlike(subsriber,communityId,"likePersons", "Remove");
+        likeOrUnlike(subsriber, communityId, "likePersons", "Remove");
     }
 
-    private void likeOrUnlike(final Subsriber subsriber, final String communityId,final String name,final String action) {
+    private void likeOrUnlike(final Subsriber subsriber, final String communityId, final String name, final String action) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -193,9 +218,9 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
                     @Override
                     public void writeTo(BufferedSink sink) throws IOException {
                         if (name.equals("likePersons"))
-                            sink.write(("{\""+name+"\" :{\"__op\":\"" + action + "\",\"objects\":[\"" + DroiUser.getCurrentUser(User.class).getObjectId() + "\"]}}").getBytes());
+                            sink.write(("{\"" + name + "\" :{\"__op\":\"" + action + "\",\"objects\":[\"" + DroiUser.getCurrentUser(User.class).getObjectId() + "\"]}}").getBytes());
                         else
-                            sink.write(("{\""+name+"\" :{\"__op\":\"" + action + "\",\"amount\":1}}").getBytes());
+                            sink.write(("{\"" + name + "\" :{\"__op\":\"" + action + "\",\"amount\":1}}").getBytes());
 
 
                     }
@@ -226,7 +251,8 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
                                 try {
                                     JSONObject jsonObject = new JSONObject(resp);
                                     if (jsonObject.getInt("Code") == 0) subsriber.onComplete();
-                                    else Toast.makeText(MainActivity.this, jsonObject.getString("Message"), Toast.LENGTH_SHORT).show();
+                                    else
+                                        Toast.makeText(MainActivity.this, jsonObject.getString("Message"), Toast.LENGTH_SHORT).show();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/bottom"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="#f0f0f0"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_reply"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/dp_8"
+            android:layout_marginLeft="@dimen/dp_16"
+            android:layout_marginRight="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_8"
+            android:layout_toLeftOf="@+id/tv_reply"
+            android:background="@drawable/edit_style"
+            android:hint="说点什么吧...~"
+            android:paddingLeft="@dimen/dp_16"
+            android:textColorHint="@color/gray"
+            android:textCursorDrawable="@drawable/edit_text_cursor"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/tv_reply"
+            android:layout_width="@dimen/dp_48"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dp_8"
+            android:background="@drawable/text_item_reply"
+            android:gravity="center"
+            android:padding="@dimen/dp_4"
+            android:text="@string/reply"
+            android:textColor="@color/white" />
+    </RelativeLayout>
