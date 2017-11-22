@@ -5,14 +5,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by YellowDoing on 2017/11/18.
+ *
  */
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyViewHolder> {
@@ -21,12 +24,27 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyVie
     private LayoutInflater mInflater;
     private List<Comment> mComments;
     private Callback mCallback;
+    private String mCommunityId;
 
-    public CommentAdapter(Context context, List<Comment> comments, Callback callback) {
+    public CommentAdapter(Context context,String communityId, List<Comment> comments, Callback callback) {
         mContext = context;
-        mComments = comments;
+        mComments = new ArrayList<>();
         mInflater = LayoutInflater.from(mContext);
         mCallback = callback;
+        mCommunityId = communityId;
+
+        for (Comment comment : comments){
+            if(comment.getParentId().equals(communityId))
+                mComments.add(comment);
+        }
+
+        for (Comment comment : mComments){
+            for (Comment co : comments){
+                if (comment.getId().equals(co.getParentId())){
+                    comment.addChildComments(co);
+                }
+            }
+        }
     }
 
     public void add(List<Comment> list){
@@ -56,6 +74,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyVie
                 mCallback.getCommentId(comment.getNickName(),comment.getId());
             }
         });
+        holder.mLvReply.setAdapter(new ChildReplyAdapter(comment.getChildComments(),mContext));
     }
 
     @Override
@@ -67,12 +86,14 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyVie
 
         CircleImageView mCvAvatar;
         TextView mTvNickName,mTvContent;
+        ListView mLvReply;
 
         public ReplyViewHolder(View itemView) {
             super(itemView);
             mCvAvatar = (CircleImageView) itemView.findViewById(R.id.iv_avatar);
             mTvNickName = (TextView) itemView.findViewById(R.id.tv_nick_name);
             mTvContent = (TextView) itemView.findViewById(R.id.tv_content);
+            mLvReply = (ListView) itemView.findViewById(R.id.lv_child_reply);
         }
     }
 

@@ -2,29 +2,43 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    style="@style/ripple"
+    android:paddingTop="@dimen/dp_12"
+    android:paddingBottom="@dimen/dp_12"
+    android:paddingLeft="@dimen/dp_8"
+    android:paddingRight="@dimen/dp_8"
     android:orientation="vertical">
 
     <hg.yellowdoing.communityui.CircleImageView
         android:id="@+id/iv_avatar"
-        android:layout_margin="@dimen/dp_8"
-        android:layout_width="@dimen/dp_40"
-        android:layout_height="@dimen/dp_40" />
+        android:layout_width="32dp"
+        android:layout_height="32dp" />
 
     <TextView
+        android:textSize="12sp"
+        android:textColor="@color/name"
         android:id="@+id/tv_nick_name"
-        android:layout_marginLeft="@dimen/dp_4"
+        android:layout_marginLeft="@dimen/dp_8"
         android:layout_toRightOf="@+id/iv_avatar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/tv_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="@dimen/dp_8"
+        android:textColor="@color/black"
         android:layout_below="@+id/tv_nick_name"
-        android:layout_margin="@dimen/dp_4"
         android:layout_toRightOf="@+id/iv_avatar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-
-
+    <ListView
+        android:background="#f0f0f0"
+        android:layout_marginLeft="@dimen/dp_8"
+        android:layout_toRightOf="@+id/iv_avatar"
+        android:layout_below="@id/tv_content"
+        android:id="@+id/lv_child_reply"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 </RelativeLayout>

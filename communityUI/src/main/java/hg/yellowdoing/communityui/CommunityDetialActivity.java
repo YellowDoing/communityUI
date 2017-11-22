@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -57,11 +58,15 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
         mIvImages = (RecyclerView) findViewById(R.id.rv_images);
         mRvReplies = (RecyclerView) findViewById(R.id.rv_replys);
         mRvReplies.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new CommentAdapter(this, new ArrayList<Comment>(), new CommentAdapter.Callback() {
+        mRvReplies.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        mAdapter = new CommentAdapter(this,mCommunity.getId(), new ArrayList<Comment>(), new CommentAdapter.Callback() {
             @Override
             public void getCommentId(String nick, String id) {
                 mEtReply.setTag(id);
                 mEtReply.setHint("回复: " + nick);
+                mEtReply.requestFocus();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(mEtReply, 0);
             }
         });
         mTvNickName = (TextView) findViewById(R.id.tv_nick_name);
@@ -168,7 +173,6 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
                 mRefreshLayout.endRefreshing();
             } else
                 mAdapter.add((List<Comment>) intent.getExtras().get("comments"));
-
         }
     }
 
