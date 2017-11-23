@@ -138,8 +138,9 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
         }
     }
 
+
     @Override
-    public void reply(Subsriber subsriber, String communityId, String commentId, String content) {
+    public void comment(Subsriber subsriber, String communityId, String parentId, String commentId, String content) {
         if (!getSharedPreferences("user", MODE_PRIVATE).getBoolean("isLogin", false)) {
             startActivity(new Intent(this, LoginActivity.class));
             return;
@@ -151,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
         comment.setContent(content);
         comment.setCommunityId(communityId);
         comment.setCommentId(commentId);
+        comment.setParentId(parentId);
         comment.setAuthor(DroiUser.getCurrentUser(User.class));
         DroiError error = comment.save();
         if (error.isOk()) {
@@ -182,13 +184,14 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
                 comment1.setContent(myComments.get(i).getContent());
                 comment1.setId(myComments.get(i).getObjectId());
                 comment1.setNickName(myComments.get(i).getAuthor().getNickName());
-                comment1.setParentId(myComments.get(i).getCommentId());
+                comment1.setParentId(myComments.get(i).getParentId());
+                comment1.setCommentId(myComments.get(i).getCommentId());
+                comment1.setCreateTime(myComments.get(i).getCreationTime().getTime());
                 comments.add(comment1);
             }
 
             subsriber.onComplete(comments);
-        } else
-            Log.d("aaaa", "loadComments: " + error.toString());//Toast.makeText(this, error.getTicket(), Toast.LENGTH_SHORT).show();
+        } else Toast.makeText(this, "回复失败", Toast.LENGTH_SHORT).show();
 
     }
 
@@ -221,8 +224,6 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
                             sink.write(("{\"" + name + "\" :{\"__op\":\"" + action + "\",\"objects\":[\"" + DroiUser.getCurrentUser(User.class).getObjectId() + "\"]}}").getBytes());
                         else
                             sink.write(("{\"" + name + "\" :{\"__op\":\"" + action + "\",\"amount\":1}}").getBytes());
-
-
                     }
                 };
                 Request request = new Request.Builder()
@@ -326,6 +327,5 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
             return (day / 30) + "个月前";
         else
             return (day / 365) + "年前";
-
     }
 }

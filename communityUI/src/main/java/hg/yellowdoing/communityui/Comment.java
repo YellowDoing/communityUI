@@ -17,21 +17,43 @@ public class Comment implements Serializable {
     private long createTime;
     private String commentId; //直接对应的父评论ID
     private String parentId; //对应的一级评论ID
+    private String theOtherNickName;
+    private String communityId;
+
+    public String getCommunityId() {
+        return communityId;
+    }
+
+    public Comment setCommunityId(String communityId) {
+        this.communityId = communityId;
+        return this;
+    }
+
+    public String getTheOtherNickName() {
+        return theOtherNickName;
+    }
+
+    public Comment setTheOtherNickName(String theOtherNickName) {
+        this.theOtherNickName = theOtherNickName;
+        return this;
+    }
 
     public long getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(long createTime) {
+    public Comment setCreateTime(long createTime) {
         this.createTime = createTime;
+        return this;
     }
 
     public String getCommentId() {
         return commentId;
     }
 
-    public void setCommentId(String commentId) {
+    public Comment setCommentId(String commentId) {
         this.commentId = commentId;
+        return this;
     }
 
     private List<Comment> childComments;
@@ -40,14 +62,16 @@ public class Comment implements Serializable {
         return childComments;
     }
 
-    public void setChildComments(List<Comment> childComments) {
+    public Comment setChildComments(List<Comment> childComments) {
         this.childComments = childComments;
+        return this;
     }
 
-    public void addChildComments(Comment comment) {
+    public Comment addChildComments(Comment comment) {
         if (childComments == null)
             childComments = new ArrayList<>();
         childComments.add(comment);
+        return this;
     }
 
     public String getParentId() {

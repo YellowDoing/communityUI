@@ -16,7 +16,14 @@ public interface CommunityInterface{
 
     void loadCommunityList(CommunitySubsriber subsriber,int page);
 
-    void reply(Subsriber subsriber,String communityId,String commentId,String content);
+    /**
+     * @param subsriber 接口回调
+     * @param communityId 帖子的Id
+     * @param commentId  所评论的评论的Id
+     * @param parentId 父评论Id
+     * @param content 评论的内容
+     */
+    void comment(Subsriber subsriber,String communityId,String parentId,String commentId,String content);
 
     void loadComments(CommentSubsriber subsriber,String communityId,int page);
 

@@ -18,6 +18,17 @@ public class MyComment extends DroiObject {
     private String commentId;
     @DroiExpose
     private String communityId;
+    @DroiExpose
+    private String parentId;
+
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
 
     public User getAuthor() {
         return author;

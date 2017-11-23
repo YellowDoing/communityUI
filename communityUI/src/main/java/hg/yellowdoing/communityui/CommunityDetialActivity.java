@@ -12,6 +12,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -31,7 +32,7 @@ import static hg.yellowdoing.communityui.CommunityDetialActivity.CommunityDetail
  * Created by YellowDoing on 2017/11/13.
  */
 
-public class CommunityDetialActivity extends Activity implements View.OnClickListener, BGARefreshLayout.BGARefreshLayoutDelegate {
+public class CommunityDetialActivity extends Activity implements View.OnClickListener, BGARefreshLayout.BGARefreshLayoutDelegate, CommentAdapter.Callback {
 
     private CircleImageView mIvHead;
     private RecyclerView mIvImages, mRvReplies;
@@ -58,17 +59,7 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
         mIvImages = (RecyclerView) findViewById(R.id.rv_images);
         mRvReplies = (RecyclerView) findViewById(R.id.rv_replys);
         mRvReplies.setLayoutManager(new LinearLayoutManager(this));
-        mRvReplies.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-        mAdapter = new CommentAdapter(this,mCommunity.getId(), new ArrayList<Comment>(), new CommentAdapter.Callback() {
-            @Override
-            public void getCommentId(String nick, String id) {
-                mEtReply.setTag(id);
-                mEtReply.setHint("回复: " + nick);
-                mEtReply.requestFocus();
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.showSoftInput(mEtReply, 0);
-            }
-        });
+        mRvReplies.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         mTvNickName = (TextView) findViewById(R.id.tv_nick_name);
         mTvReply = (TextView) findViewById(R.id.tv_reply);
         mEtReply = (EditText) findViewById(R.id.et_reply);
@@ -84,8 +75,28 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
         mRefreshLayout.setRefreshViewHolder(refreshViewHolder);*/
     }
 
+
+   /* @Override
+    public void getCommentId(String name, String id) {
+        mEtReply.setTag(id);
+        mEtReply.setHint("回复: " + nick);
+        mEtReply.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(mEtReply, 0);
+    }*/
+
+    @Override
+    public void commentSelect(String nickName, String commentId, String parentId) {
+        mEtReply.setTag(new Pair<>(commentId, parentId));
+        mEtReply.setHint("回复: " + nickName);
+        mEtReply.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(mEtReply, 0);
+    }
+
     private void initData() {
         mCommunity = (Community) getIntent().getSerializableExtra("community");
+        mAdapter = new CommentAdapter(this, mCommunity.getId(), new ArrayList<Comment>(), this);
         Glide.with(this).load(mCommunity.getAvatar()).centerCrop().into(mIvHead);
         mTvNickName.setText(mCommunity.getNickName());
         if (mCommunity.getContent() == null || mCommunity.getContent().trim().equals(""))
@@ -99,8 +110,7 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
                 mIvImages.setAdapter(new ImageAdapter(this, mCommunity.getImagePaths()));
             }
 
-        mEtReply.setTag(mCommunity.getId());
-
+        mEtReply.setTag(new Pair<>(mCommunity.getId(),mCommunity.getId()));
         mTvContent.setText(mCommunity.getContent());
         mTvNickName.setText(mCommunity.getNickName());
 
@@ -121,11 +131,12 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
     }
 
     private void reply() {
+        Pair<String, String> pair = (Pair<String, String>) mEtReply.getTag();
         mManager.sendBroadcast(new Intent(CommunityFragment.CommunityFragmentReceiver.ACTION)
                 .putExtra(CommunityFragment.CommunityFragmentReceiver.ACTION, "reply")
-                .putExtra("commentId", (String) mEtReply.getTag())
-                .putExtra("communityId", mCommunity.getId())
-                .putExtra("content", mEtReply.getText().toString()));
+                .putExtra("comment", new Comment().setContent(mEtReply.getText().toString())
+                        .setCommunityId(mCommunity.getId())
+                        .setCommentId(pair.first).setParentId(pair.second)));
     }
 
     @Override
@@ -168,11 +179,12 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
                 mEtReply.setTag(mCommunity.getId());
                 return;
             }
-            if (mCurrentPage == 1) {
+            // TODO: 2017/11/24
+            /*if (mCurrentPage == 1) {
                 mAdapter.set((List<Comment>) intent.getExtras().get("comments"));
                 mRefreshLayout.endRefreshing();
             } else
-                mAdapter.add((List<Comment>) intent.getExtras().get("comments"));
+                mAdapter.add((List<Comment>) intent.getExtras().get("comments"));*/
         }
     }
 

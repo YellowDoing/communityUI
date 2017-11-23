@@ -15,10 +15,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import cn.bingoogolapple.refreshlayout.BGANormalRefreshViewHolder;
 import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
+
 import java.io.Serializable;
 import java.util.List;
+
 import static hg.yellowdoing.communityui.CommunityFragment.CommunityFragmentReceiver.ACTION;
 
 
@@ -127,8 +130,8 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
                         mManager.sendBroadcast(new Intent(CommunityDetialActivity.CommunityDetailReceiver.ACTION).putExtras(bundle));
                     }
                 }, intent.getStringExtra("communityId"), intent.getIntExtra("page", 1));
-            }else if (action.equals("post")){
-                final Community community = (Community)intent.getSerializableExtra("community");
+            } else if (action.equals("post")) {
+                final Community community = (Community) intent.getSerializableExtra("community");
                 mCommunityInterface.post(new CommunityInterface.Subsriber() {
                     @Override
                     public void onComplete() {
@@ -138,16 +141,17 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
                             public void onComplete(List<Community> communityList) {
                                 mAdapter.set(communityList);
                             }
-                        },0);
+                        }, 0);
                     }
-                },community.getImagePaths(),community.getContent());
-            }else if (action.equals("reply")){
-                mCommunityInterface.reply(new CommunityInterface.Subsriber() {
+                }, community.getImagePaths(), community.getContent());
+            } else if (action.equals("reply")) {
+                Comment comment = (Comment) intent.getSerializableExtra("comment");
+                mCommunityInterface.comment(new CommunityInterface.Subsriber() {
                     @Override
                     public void onComplete() {
-                        mManager.sendBroadcast(new Intent(CommunityDetialActivity.CommunityDetailReceiver.ACTION).putExtra("isReply",true));
+                        mManager.sendBroadcast(new Intent(CommunityDetialActivity.CommunityDetailReceiver.ACTION).putExtra("isReply", true));
                     }
-                },intent.getStringExtra("communityId"),intent.getStringExtra("commentId"),intent.getStringExtra("content"));
+                }, comment.getCommunityId(), comment.getParentId(), comment.getCommentId(), comment.getContent());
             }
         }
     }

@@ -12,6 +12,7 @@ import java.util.List;
 
 /**
  * Created by YellowDoing on 2017/11/22.
+ *
  */
 
 public class ChildReplyAdapter extends BaseAdapter {
@@ -51,8 +52,7 @@ public class ChildReplyAdapter extends BaseAdapter {
         TextView tv_reply = (TextView) view.findViewById(R.id.tv_reply);
         TextView tv_beReplied = (TextView) view.findViewById(R.id.tv_beReplied);
         TextView tv_content = (TextView) view.findViewById(R.id.tv_content);
-
-        comment.
+        //comment.
 
         return view;
     }

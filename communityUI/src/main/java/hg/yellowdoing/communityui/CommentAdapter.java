@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -22,22 +23,25 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyVie
 
     private Context mContext;
     private LayoutInflater mInflater;
-    private List<Comment> mComments;
+    private List<Comment> mComments,mAllComments;
     private Callback mCallback;
     private String mCommunityId;
 
     public CommentAdapter(Context context,String communityId, List<Comment> comments, Callback callback) {
         mContext = context;
         mComments = new ArrayList<>();
+        mAllComments = comments;
         mInflater = LayoutInflater.from(mContext);
         mCallback = callback;
         mCommunityId = communityId;
 
+        //筛选出一级评论
         for (Comment comment : comments){
-            if(comment.getParentId().equals(communityId))
+            if(comment.getCommentId().equals(communityId))
                 mComments.add(comment);
         }
 
+        //归类出所有一级评论的子评论
         for (Comment comment : mComments){
             for (Comment co : comments){
                 if (comment.getId().equals(co.getParentId())){
@@ -45,9 +49,20 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyVie
                 }
             }
         }
-    }
 
-    public void add(List<Comment> list){
+        //归类出子评论所评论的人的姓名
+        for (Comment comment : mComments){
+            for (Comment comment1 : comment.getChildComments()){
+                for (Comment comment2 : comment.getChildComments()){
+                    if (!comment1.getId().equals(comment.getId()) && comment1.getId().equals(comment2.getCommentId()))
+                        comment2.setTheOtherNickName(comment1.getNickName());
+                }
+            }
+        }
+
+    }
+/*
+  public void add(List<Comment> list){
         mComments.addAll(list);
         notifyDataSetChanged();
     }
@@ -55,7 +70,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyVie
     public void set(List<Comment> list){
         mComments = list;
         notifyDataSetChanged();
-    }
+    }*/
 
     @Override
     public ReplyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -71,10 +86,17 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyVie
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCallback.getCommentId(comment.getNickName(),comment.getId());
+                mCallback.commentSelect(comment.getNickName(),comment.getId(),comment.getId());
             }
         });
-        holder.mLvReply.setAdapter(new ChildReplyAdapter(comment.getChildComments(),mContext));
+        final ChildReplyAdapter adapter = new ChildReplyAdapter(comment.getChildComments(),mContext);
+        holder.mLvReply.setAdapter(adapter);
+        holder.mLvReply.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mCallback.commentSelect(adapter.getItem(position).getNickName(),adapter.getItem(position).getCommentId(),comment.getId());
+            }
+        });
     }
 
     @Override
@@ -98,6 +120,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyVie
     }
 
     interface Callback{
-        void getCommentId(String name,String id);
+        void commentSelect(String nickName,String commentId,String parentId);
     }
 }
