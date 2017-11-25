@@ -12,6 +12,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -44,6 +45,7 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
     private BGARefreshLayout mRefreshLayout;
     private Community mCommunity;
     private CommentAdapter mAdapter;
+    private String theOhterNickName;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,19 +78,12 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
     }
 
 
-   /* @Override
-    public void getCommentId(String name, String id) {
-        mEtReply.setTag(id);
-        mEtReply.setHint("回复: " + nick);
-        mEtReply.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(mEtReply, 0);
-    }*/
 
     @Override
     public void commentSelect(String nickName, String commentId, String parentId) {
         mEtReply.setTag(new Pair<>(commentId, parentId));
-        mEtReply.setHint("回复: " + nickName);
+        theOhterNickName = nickName;
+        mEtReply.setHint("回复: " + theOhterNickName);
         mEtReply.requestFocus();
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(mEtReply, 0);
@@ -117,6 +112,7 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
         mReceiver = new CommunityDetailReceiver();
         mManager = LocalBroadcastManager.getInstance(this);
         mManager.registerReceiver(mReceiver, new IntentFilter(ACTION));
+        mCurrentPage = 1;
         //mRefreshLayout.beginRefreshing();
         sendCommentBroadcast();
     }
@@ -132,11 +128,16 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
 
     private void reply() {
         Pair<String, String> pair = (Pair<String, String>) mEtReply.getTag();
+
+        Comment comment = new Comment().setContent(mEtReply.getText().toString())
+                .setCommunityId(mCommunity.getId())
+                .setCommentId(pair.first).setParentId(pair.second);
+        if (theOhterNickName != null)
+            comment.setTheOtherNickName(theOhterNickName);
+
         mManager.sendBroadcast(new Intent(CommunityFragment.CommunityFragmentReceiver.ACTION)
                 .putExtra(CommunityFragment.CommunityFragmentReceiver.ACTION, "reply")
-                .putExtra("comment", new Comment().setContent(mEtReply.getText().toString())
-                        .setCommunityId(mCommunity.getId())
-                        .setCommentId(pair.first).setParentId(pair.second)));
+                .putExtra("comment", comment));
     }
 
     @Override
@@ -177,12 +178,14 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
                                 .getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 mEtReply.setText("");
                 mEtReply.setTag(mCommunity.getId());
+                theOhterNickName = null;
                 return;
             }
-            // TODO: 2017/11/24
-            if(mCurrentPage == 1)
-                mAdapter = new CommentAdapter(context, mCommunity.getId(), (List<Comment>) intent.getExtras().get("comments"), CommunityDetialActivity.this);
-
+            if(mCurrentPage == 1) {
+                List<Comment> comments = (List<Comment>) intent.getExtras().get("comments");
+                mAdapter = new CommentAdapter(context, mCommunity.getId(),comments , CommunityDetialActivity.this);
+                mRvReplies.setAdapter(mAdapter);
+            }
         }
     }
 

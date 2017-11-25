@@ -32,7 +32,7 @@
         android:layout_toRightOf="@+id/iv_avatar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
-    <ListView
+    <hg.yellowdoing.communityui.MyListView
         android:background="#f0f0f0"
         android:layout_marginLeft="@dimen/dp_8"
         android:layout_toRightOf="@+id/iv_avatar"

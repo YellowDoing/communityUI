@@ -189,10 +189,8 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
                 comment1.setCreateTime(myComments.get(i).getCreationTime().getTime());
                 comments.add(comment1);
             }
-
             subsriber.onComplete(comments);
         } else Toast.makeText(this, "回复失败", Toast.LENGTH_SHORT).show();
-
     }
 
     @Override

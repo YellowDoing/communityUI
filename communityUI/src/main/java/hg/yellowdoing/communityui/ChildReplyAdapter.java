@@ -1,6 +1,8 @@
 package hg.yellowdoing.communityui;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +14,6 @@ import java.util.List;
 
 /**
  * Created by YellowDoing on 2017/11/22.
- *
  */
 
 public class ChildReplyAdapter extends BaseAdapter {
@@ -44,17 +45,27 @@ public class ChildReplyAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view = mInflater.inflate(R.layout.list_item_child_reply,null);
+        View view = mInflater.inflate(R.layout.list_item_child_reply, null);
 
-        Comment comment = mCommentList.get(position);
+        final Comment comment = mCommentList.get(position);
 
         TextView tv_author_name = (TextView) view.findViewById(R.id.tv_author_name);
         TextView tv_reply = (TextView) view.findViewById(R.id.tv_reply);
         TextView tv_beReplied = (TextView) view.findViewById(R.id.tv_beReplied);
         TextView tv_content = (TextView) view.findViewById(R.id.tv_content);
 
-        tv_author_name.setText(comment.getNickName());
+
         tv_content.setText(comment.getContent());
+
+        if (comment.getTheOtherNickName() != null) {
+            tv_reply.setVisibility(View.VISIBLE);
+            tv_beReplied.setText(comment.getTheOtherNickName());
+            tv_author_name.setText(comment.getNickName());
+        } else {
+            tv_reply.setVisibility(View.GONE);
+            tv_author_name.setText(comment.getNickName() + "：");
+        }
+
 
         return view;
     }
