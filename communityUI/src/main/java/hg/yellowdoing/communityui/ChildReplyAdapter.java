@@ -52,7 +52,9 @@ public class ChildReplyAdapter extends BaseAdapter {
         TextView tv_reply = (TextView) view.findViewById(R.id.tv_reply);
         TextView tv_beReplied = (TextView) view.findViewById(R.id.tv_beReplied);
         TextView tv_content = (TextView) view.findViewById(R.id.tv_content);
-        //comment.
+
+        tv_author_name.setText(comment.getNickName());
+        tv_content.setText(comment.getContent());
 
         return view;
     }

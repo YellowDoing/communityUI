@@ -180,11 +180,9 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
                 return;
             }
             // TODO: 2017/11/24
-            /*if (mCurrentPage == 1) {
-                mAdapter.set((List<Comment>) intent.getExtras().get("comments"));
-                mRefreshLayout.endRefreshing();
-            } else
-                mAdapter.add((List<Comment>) intent.getExtras().get("comments"));*/
+            if(mCurrentPage == 1)
+                mAdapter = new CommentAdapter(context, mCommunity.getId(), (List<Comment>) intent.getExtras().get("comments"), CommunityDetialActivity.this);
+
         }
     }
 

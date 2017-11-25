@@ -10,15 +10,13 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
 import com.bumptech.glide.Glide;
-
 import java.util.ArrayList;
-
 import me.iwf.photopicker.PhotoPreview;
 
 /**
  * Created by YellowDoing on 2017/11/11.
+ *
  */
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHolder> {
@@ -72,7 +70,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageViewHol
 
     class ImageViewHolder extends RecyclerView.ViewHolder {
         ImageView mImageView;
-        String path;
 
         public ImageViewHolder(View itemView) {
             super(itemView);

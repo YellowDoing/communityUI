@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.droi.sdk.DroiCallback;
 import com.droi.sdk.DroiError;
@@ -27,6 +26,7 @@ import me.iwf.photopicker.PhotoPicker;
 
 /**
  * Created by YellowDoing on 2017/11/8.
+ *
  */
 
 public class UserInfoActivity extends AppCompatActivity implements View.OnClickListener {
