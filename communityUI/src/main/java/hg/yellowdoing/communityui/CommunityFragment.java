@@ -153,6 +153,23 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
                         mManager.sendBroadcast(new Intent(CommunityDetialActivity.CommunityDetailReceiver.ACTION).putExtra("isReply", true));
                     }
                 }, comment.getCommunityId(), comment.getParentId(), comment.getCommentId(), comment.getContent());
+            }else if (action.equals("like")){
+                if (intent.getBooleanExtra("isLike",false))
+                    mCommunityInterface.unLike(new CommunityInterface.Subsriber() {
+                        @Override
+                        public void onComplete() {
+                            mManager.sendBroadcast(new Intent(CommunityDetialActivity.CommunityDetailReceiver.ACTION)
+                                    .putExtra("unlikeSuccess",true));
+                        }
+                    },intent.getStringExtra("communityId"));
+                else
+                    mCommunityInterface.like(new CommunityInterface.Subsriber() {
+                        @Override
+                        public void onComplete() {
+                            mManager.sendBroadcast(new Intent(CommunityDetialActivity.CommunityDetailReceiver.ACTION)
+                                    .putExtra("likeSuccess",true));
+                        }
+                    },intent.getStringExtra("communityId"));
             }
         }
     }

@@ -32,7 +32,7 @@
     <color name="like_num">#E75975</color>
     <color name="white">#ffffff</color>
     <color name="red">#ff2d2d</color>
-
+  <color name="bg_sub">#f8f7fd</color>
 
     <!-- styleable -->
 

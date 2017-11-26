@@ -17,10 +17,12 @@ import android.util.Pair;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.ufreedom.uikit.FloatingText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +39,7 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
 
     private CircleImageView mIvHead;
     private RecyclerView mIvImages, mRvReplies;
-    private TextView mTvContent, mTvNickName, mTvReply;
+    private TextView mTvContent, mTvNickName, mTvReply, mTvLikeNum;
     private EditText mEtReply;
     private CommunityDetailReceiver mReceiver;
     private LocalBroadcastManager mManager;
@@ -46,6 +48,7 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
     private Community mCommunity;
     private CommentAdapter mAdapter;
     private String theOhterNickName;
+    private ImageView mIvLike;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,6 +62,8 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
         findViewById(R.id.iv_back).setOnClickListener(this);
         mIvHead = (CircleImageView) findViewById(R.id.iv_head);
         mIvImages = (RecyclerView) findViewById(R.id.rv_images);
+        mIvLike = (ImageView) findViewById(R.id.iv_like);
+        mTvLikeNum = (TextView) findViewById(R.id.tv_like_num);
         mRvReplies = (RecyclerView) findViewById(R.id.rv_replys);
         mRvReplies.setLayoutManager(new LinearLayoutManager(this));
         mRvReplies.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
@@ -69,6 +74,7 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
         mRvReplies.setAdapter(mAdapter);
 
         mTvReply.setOnClickListener(this);
+        mIvLike.setOnClickListener(this);
 
         //设置下拉刷新并开始刷新
  /*       mRefreshLayout = (BGARefreshLayout) findViewById(R.id.refrash_layout);
@@ -76,7 +82,6 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
         BGANormalRefreshViewHolder refreshViewHolder = new BGANormalRefreshViewHolder(this, true);
         mRefreshLayout.setRefreshViewHolder(refreshViewHolder);*/
     }
-
 
 
     @Override
@@ -105,7 +110,14 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
                 mIvImages.setAdapter(new ImageAdapter(this, mCommunity.getImagePaths()));
             }
 
-        mEtReply.setTag(new Pair<>(mCommunity.getId(),mCommunity.getId()));
+        if (mCommunity.isLike()) {
+            mIvLike.setBackgroundResource(R.drawable.zan_style_2);
+            mIvLike.setImageResource(R.drawable.ic_zan_hover);
+            mTvLikeNum.setTextColor(getResources().getColor(R.color.like_num));
+        }
+        mTvLikeNum.setText(mCommunity.getLikeNum() + "");
+
+        mEtReply.setTag(new Pair<>(mCommunity.getId(), mCommunity.getId()));
         mTvContent.setText(mCommunity.getContent());
         mTvNickName.setText(mCommunity.getNickName());
 
@@ -124,6 +136,16 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
             finish();
         else if (id == R.id.tv_reply)
             reply();
+        else if (id == R.id.iv_like)
+            like();
+    }
+
+    private void like() {
+        mIvLike.setOnClickListener(null);
+        mManager.sendBroadcast(new Intent(CommunityFragment.CommunityFragmentReceiver.ACTION)
+                .putExtra(CommunityFragment.CommunityFragmentReceiver.ACTION, "like")
+                .putExtra("isLike", mCommunity.isLike())
+                .putExtra("communityId", mCommunity.getId()));
     }
 
     private void reply() {
@@ -177,14 +199,39 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
                         .hideSoftInputFromWindow(CommunityDetialActivity.this.getCurrentFocus()
                                 .getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 mEtReply.setText("");
-                mEtReply.setTag(mCommunity.getId());
+                mEtReply.setTag(new Pair<>(mCommunity.getId(), mCommunity.getId()));
                 theOhterNickName = null;
                 return;
             }
-            if(mCurrentPage == 1) {
+            if (intent.getBooleanExtra("likeSuccess", false)) {
+                mIvLike.setBackgroundResource(R.drawable.zan_style_2);
+                mIvLike.setImageResource(R.drawable.ic_zan_hover);
+                mTvLikeNum.setTextColor(getResources().getColor(R.color.like_num));
+                mTvLikeNum.setText(String.valueOf(Integer.valueOf(mTvLikeNum.getText().toString()) + 1));
+                mCommunity.setLike(true);
+                FloatingText   floatingText = new FloatingText.FloatingTextBuilder(CommunityDetialActivity.this)
+                        .textColor(getResources().getColor(R.color.like_num)) // floating  text color
+                        .textSize(100)   // floating  text size
+                        .textContent("+1") // floating  text content
+                        .build();
+                floatingText.attach2Window();
+                floatingText.startFloating(mTvLikeNum);
+                mIvLike.setOnClickListener(CommunityDetialActivity.this);
+            }
+            if (intent.getBooleanExtra("unlikeSuccess", false)) {
+                mIvLike.setBackgroundResource(R.drawable.zan_style);
+                mIvLike.setImageResource(R.drawable.ic_zan);
+                mTvLikeNum.setTextColor(getResources().getColor(R.color.gray));
+                mTvLikeNum.setText(String.valueOf(Integer.valueOf(mTvLikeNum.getText().toString()) - 1));
+                mCommunity.setLike(false);
+                mIvLike.setOnClickListener(CommunityDetialActivity.this);
+            }
+            if (mCurrentPage == 1) {
                 List<Comment> comments = (List<Comment>) intent.getExtras().get("comments");
-                mAdapter = new CommentAdapter(context, mCommunity.getId(),comments , CommunityDetialActivity.this);
-                mRvReplies.setAdapter(mAdapter);
+                if (comments != null){
+                    mAdapter = new CommentAdapter(context, mCommunity.getId(), comments, CommunityDetialActivity.this);
+                    mRvReplies.setAdapter(mAdapter);
+                }
             }
         }
     }

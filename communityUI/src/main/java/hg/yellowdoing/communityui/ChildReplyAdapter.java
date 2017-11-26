@@ -66,7 +66,6 @@ public class ChildReplyAdapter extends BaseAdapter {
             tv_author_name.setText(comment.getNickName() + "：");
         }
 
-
         return view;
     }
 }
