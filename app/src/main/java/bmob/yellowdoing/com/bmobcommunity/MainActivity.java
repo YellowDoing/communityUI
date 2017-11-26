@@ -144,6 +144,11 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
         if (!getSharedPreferences("user", MODE_PRIVATE).getBoolean("isLogin", false)) {
             startActivity(new Intent(this, LoginActivity.class));
             return;
+        }else {
+            if (DroiUser.getCurrentUser(User.class).getAvatar() == null || DroiUser.getCurrentUser(User.class).getNickName() == null){
+                startActivity(new Intent(this, UserInfoActivity.class));
+                return;
+            }
         }
         MyComment comment = new MyComment();
         DroiPermission droiPermission = new DroiPermission();

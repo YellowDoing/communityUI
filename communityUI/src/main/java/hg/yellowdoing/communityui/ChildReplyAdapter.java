@@ -59,7 +59,7 @@ public class ChildReplyAdapter extends BaseAdapter {
 
         if (comment.getTheOtherNickName() != null) {
             tv_reply.setVisibility(View.VISIBLE);
-            tv_beReplied.setText(comment.getTheOtherNickName());
+            tv_beReplied.setText(comment.getTheOtherNickName() + "：");
             tv_author_name.setText(comment.getNickName());
         } else {
             tv_reply.setVisibility(View.GONE);

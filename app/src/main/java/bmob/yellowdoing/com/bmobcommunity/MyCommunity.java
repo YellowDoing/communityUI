@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  * Created by YellowDoing on 2017/11/18.
+ *
  */
 
 @DroiObjectName("Community")
