@@ -38,6 +38,7 @@
         <activity android:name=".UserInfoActivity"/>
 
         <activity android:name="hg.yellowdoing.communityui.CommunityDetialActivity"/>
+        <activity android:name="hg.yellowdoing.communityui.CommentDetailActivity"/>
 
         <meta-data android:name="com.droi.sdk.application_id" android:value="3gltmbzh_tAPpNFDH-LvwZAA5ngH31dHlQBkjYMm" />
         <!-- ChannelName 为开发者自定义的渠道名称 -->
