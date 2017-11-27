@@ -8,6 +8,7 @@
     <string name="submit">发布</string>
     <string name="reply">回复</string>
     <string name="detail">详情</string>
+  <string name="comment_detail">评论详情</string>
 
 
     <!-- dimen -->

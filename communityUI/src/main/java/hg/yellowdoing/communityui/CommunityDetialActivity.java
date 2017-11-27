@@ -49,6 +49,7 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
     private CommentAdapter mAdapter;
     private String theOhterNickName;
     private ImageView mIvLike;
+    public static final int REQUEST_CODE_REPLY = 13;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,11 +77,6 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
         mTvReply.setOnClickListener(this);
         mIvLike.setOnClickListener(this);
 
-        //设置下拉刷新并开始刷新
- /*       mRefreshLayout = (BGARefreshLayout) findViewById(R.id.refrash_layout);
-        mRefreshLayout.setDelegate(this);
-        BGANormalRefreshViewHolder refreshViewHolder = new BGANormalRefreshViewHolder(this, true);
-        mRefreshLayout.setRefreshViewHolder(refreshViewHolder);*/
     }
 
 
@@ -229,11 +225,24 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
             if (mCurrentPage == 1) {
                 List<Comment> comments = (List<Comment>) intent.getExtras().get("comments");
                 if (comments != null){
-                    mAdapter = new CommentAdapter(context, mCommunity.getId(), comments, CommunityDetialActivity.this);
+                    mAdapter = new CommentAdapter(CommunityDetialActivity.this, mCommunity.getId(), comments, CommunityDetialActivity.this);
                     mRvReplies.setAdapter(mAdapter);
                 }
             }
         }
     }
 
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK){
+            switch (requestCode){
+                case REQUEST_CODE_REPLY:
+
+                    break;
+            }
+        }
+    }
 }

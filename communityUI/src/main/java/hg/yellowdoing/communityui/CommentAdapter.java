@@ -22,13 +22,13 @@ import java.util.List;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyViewHolder> {
 
-    private Context mContext;
+    private CommunityDetialActivity mContext;
     private LayoutInflater mInflater;
     private List<Comment> mComments, mAllComments;
     private Callback mCallback;
     private String mCommunityId;
 
-    public CommentAdapter(Context context, String communityId, List<Comment> comments, Callback callback) {
+    public CommentAdapter(CommunityDetialActivity context, String communityId, List<Comment> comments, Callback callback) {
         mContext = context;
         mComments = new ArrayList<>();
         mAllComments = comments;
@@ -44,8 +44,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyVie
         //归类出所有一级评论的子评论
         for (Comment comment : mComments)
             for (Comment co : comments)
-                if (comment.getId().equals(co.getParentId()))
+                if (comment.getId().equals(co.getParentId())){
                     comment.addChildComments(co);
+                    comment.setCommentId(communityId);
+                }
+
 
         //归类出子评论所评论的人的姓名
         for (Comment comment : mComments)
@@ -76,7 +79,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyVie
         });
 
         if (comment.getChildComments() != null){
-            final ChildReplyAdapter adapter = new ChildReplyAdapter(comment.getChildComments(), mContext);
+            final ChildReplyAdapter adapter = new ChildReplyAdapter(comment, mContext);
             holder.mLvReply.setAdapter(adapter);
             holder.mLvReply.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override

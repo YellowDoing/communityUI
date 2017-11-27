@@ -23,7 +23,7 @@ public interface CommunityInterface{
      * @param parentId 父评论Id
      * @param content 评论的内容
      */
-    void comment(Subsriber subsriber,String communityId,String parentId,String commentId,String content);
+    void comment(CommentSubsriber2 subsriber,String communityId,String parentId,String commentId,String content);
 
     void loadComments(CommentSubsriber subsriber,String communityId,int page);
 
@@ -39,6 +39,10 @@ public interface CommunityInterface{
 
     interface CommentSubsriber{
         void onComplete(List<Comment> communityList);
+    }
+
+    interface CommentSubsriber2{
+        void onComplete(String nickName);
     }
 
     interface Subsriber{

@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import hg.yellowdoing.communityui.ChildReplyAdapter2;
 import hg.yellowdoing.communityui.Comment;
 import hg.yellowdoing.communityui.Community;
 import hg.yellowdoing.communityui.CommunityFragment;
@@ -140,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
 
 
     @Override
-    public void comment(Subsriber subsriber, String communityId, String parentId, String commentId, String content) {
+    public void comment(CommentSubsriber2 subsriber, String communityId, String parentId, String commentId, String content) {
         if (!getSharedPreferences("user", MODE_PRIVATE).getBoolean("isLogin", false)) {
             startActivity(new Intent(this, LoginActivity.class));
             return;
@@ -161,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
         comment.setAuthor(DroiUser.getCurrentUser(User.class));
         DroiError error = comment.save();
         if (error.isOk()) {
-            subsriber.onComplete();
+            subsriber.onComplete(DroiUser.getCurrentUser(User.class).getNickName());
             likeOrUnlike(new Subsriber() {
                 @Override
                 public void onComplete() {

@@ -33,7 +33,7 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
     private CommunityAdapter mAdapter;
     private BGARefreshLayout mRefreshLayout;
     private int mCurrentPage;
-    CommunityInterface mCommunityInterface;
+    public static CommunityInterface sCommunityInterface;
     private CommunityFragmentReceiver mReceiver;
     private LocalBroadcastManager mManager;
 
@@ -41,13 +41,17 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
      * 必须要设置接口
      */
     public CommunityFragment setCommunityInterface(CommunityInterface communityInterface) {
-        mCommunityInterface = communityInterface;
+        sCommunityInterface = communityInterface;
         if (mRefreshLayout != null) {
-            mAdapter = new CommunityAdapter(getActivity(), mCommunityInterface);
+            mAdapter = new CommunityAdapter(getActivity(), sCommunityInterface);
             mRecyclerView.setAdapter(mAdapter);
             mRefreshLayout.beginRefreshing();
         }
         return this;
+    }
+
+    public static CommunityInterface getCommunityInterface() {
+        return sCommunityInterface;
     }
 
     @Override
@@ -78,8 +82,8 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
         BGANormalRefreshViewHolder refreshViewHolder = new BGANormalRefreshViewHolder(getActivity(), true);
         mRefreshLayout.setRefreshViewHolder(refreshViewHolder);
 
-        if (mCommunityInterface != null) {
-            mAdapter = new CommunityAdapter(getActivity(), mCommunityInterface);
+        if (sCommunityInterface != null) {
+            mAdapter = new CommunityAdapter(getActivity(), sCommunityInterface);
             mRecyclerView.setAdapter(mAdapter);
             mRefreshLayout.beginRefreshing();
         }
@@ -89,7 +93,7 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
     @Override
     public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
         mCurrentPage = 1;
-        mCommunityInterface.loadCommunityList(new CommunityInterface.CommunitySubsriber() {
+        sCommunityInterface.loadCommunityList(new CommunityInterface.CommunitySubsriber() {
             @Override
             public void onComplete(List<Community> communityList) {
                 mAdapter.set(communityList);
@@ -101,7 +105,7 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
     @Override
     public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
         mCurrentPage++;
-        mCommunityInterface.loadCommunityList(new CommunityInterface.CommunitySubsriber() {
+        sCommunityInterface.loadCommunityList(new CommunityInterface.CommunitySubsriber() {
             @Override
             public void onComplete(List<Community> communityList) {
                 mAdapter.add(communityList);
@@ -123,7 +127,7 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
         public void onReceive(Context context, Intent intent) {
             String action = intent.getStringExtra(ACTION);
             if (action.equals("loadComments")) {
-                mCommunityInterface.loadComments(new CommunityInterface.CommentSubsriber() {
+                sCommunityInterface.loadComments(new CommunityInterface.CommentSubsriber() {
                     @Override
                     public void onComplete(List<Comment> communityList) {
                         Bundle bundle = new Bundle();
@@ -133,11 +137,11 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
                 }, intent.getStringExtra("communityId"), intent.getIntExtra("page", 1));
             } else if (action.equals("post")) {
                 final Community community = (Community) intent.getSerializableExtra("community");
-                mCommunityInterface.post(new CommunityInterface.Subsriber() {
+                sCommunityInterface.post(new CommunityInterface.Subsriber() {
                     @Override
                     public void onComplete() {
                         mManager.sendBroadcast(new Intent(PostActivity.PostReceiver.ACTION));
-                        mCommunityInterface.loadCommunityList(new CommunityInterface.CommunitySubsriber() {
+                        sCommunityInterface.loadCommunityList(new CommunityInterface.CommunitySubsriber() {
                             @Override
                             public void onComplete(List<Community> communityList) {
                                 mAdapter.set(communityList);
@@ -147,15 +151,15 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
                 }, community.getImagePaths(), community.getContent());
             } else if (action.equals("reply")) {
                 Comment comment = (Comment) intent.getSerializableExtra("comment");
-                mCommunityInterface.comment(new CommunityInterface.Subsriber() {
+                sCommunityInterface.comment(new CommunityInterface.CommentSubsriber2() {
                     @Override
-                    public void onComplete() {
+                    public void onComplete(String nickName) {
                         mManager.sendBroadcast(new Intent(CommunityDetialActivity.CommunityDetailReceiver.ACTION).putExtra("isReply", true));
                     }
                 }, comment.getCommunityId(), comment.getParentId(), comment.getCommentId(), comment.getContent());
             }else if (action.equals("like")){
                 if (intent.getBooleanExtra("isLike",false))
-                    mCommunityInterface.unLike(new CommunityInterface.Subsriber() {
+                    sCommunityInterface.unLike(new CommunityInterface.Subsriber() {
                         @Override
                         public void onComplete() {
                             mManager.sendBroadcast(new Intent(CommunityDetialActivity.CommunityDetailReceiver.ACTION)
@@ -163,7 +167,7 @@ public class CommunityFragment extends Fragment implements BGARefreshLayout.BGAR
                         }
                     },intent.getStringExtra("communityId"));
                 else
-                    mCommunityInterface.like(new CommunityInterface.Subsriber() {
+                    sCommunityInterface.like(new CommunityInterface.Subsriber() {
                         @Override
                         public void onComplete() {
                             mManager.sendBroadcast(new Intent(CommunityDetialActivity.CommunityDetailReceiver.ACTION)
