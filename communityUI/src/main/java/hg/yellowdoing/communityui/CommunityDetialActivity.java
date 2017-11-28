@@ -28,20 +28,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
-
-import static hg.yellowdoing.communityui.CommunityDetialActivity.CommunityDetailReceiver.ACTION;
-
 /**
  * Created by YellowDoing on 2017/11/13.
  */
 
-public class CommunityDetialActivity extends Activity implements View.OnClickListener, BGARefreshLayout.BGARefreshLayoutDelegate, CommentAdapter.Callback {
+public class CommunityDetialActivity extends Activity implements View.OnClickListener, CommentAdapter.Callback {
 
     private CircleImageView mIvHead;
     private RecyclerView mIvImages, mRvReplies;
     private TextView mTvContent, mTvNickName, mTvReply, mTvLikeNum;
     private EditText mEtReply;
-    private CommunityDetailReceiver mReceiver;
     private LocalBroadcastManager mManager;
     private int mCurrentPage;
     private BGARefreshLayout mRefreshLayout;
@@ -73,10 +69,8 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
         mEtReply = (EditText) findViewById(R.id.et_reply);
         mTvContent = (TextView) findViewById(R.id.tv_content);
         mRvReplies.setAdapter(mAdapter);
-
         mTvReply.setOnClickListener(this);
         mIvLike.setOnClickListener(this);
-
     }
 
 
@@ -117,13 +111,25 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
         mTvContent.setText(mCommunity.getContent());
         mTvNickName.setText(mCommunity.getNickName());
 
-        mReceiver = new CommunityDetailReceiver();
-        mManager = LocalBroadcastManager.getInstance(this);
-        mManager.registerReceiver(mReceiver, new IntentFilter(ACTION));
-        mCurrentPage = 1;
-        //mRefreshLayout.beginRefreshing();
-        sendCommentBroadcast();
+        loadComments();
     }
+
+    /**
+     * 加载评论列表
+     */
+    private void loadComments() {
+        mCurrentPage = 1;
+        CommunityFragment.getCommunityInterface().loadComments(new CommunityInterface.CommentSubsriber() {
+            @Override
+            public void onComplete(List<Comment> communityList) {
+                if (communityList != null) {
+                    mAdapter = new CommentAdapter(CommunityDetialActivity.this, mCommunity.getId(), communityList, CommunityDetialActivity.this);
+                    mRvReplies.setAdapter(mAdapter);
+                }
+            }
+        }, mCommunity.getId(), mCurrentPage);
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -131,81 +137,29 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
         if (id == R.id.iv_back)
             finish();
         else if (id == R.id.tv_reply)
-            reply();
+            comment();
         else if (id == R.id.iv_like)
-            like();
+            if (mCommunity.isLike())
+                unLike();
+            else
+                like();
     }
 
+
+    /**
+     * 点赞
+     */
     private void like() {
         mIvLike.setOnClickListener(null);
-        mManager.sendBroadcast(new Intent(CommunityFragment.CommunityFragmentReceiver.ACTION)
-                .putExtra(CommunityFragment.CommunityFragmentReceiver.ACTION, "like")
-                .putExtra("isLike", mCommunity.isLike())
-                .putExtra("communityId", mCommunity.getId()));
-    }
-
-    private void reply() {
-        Pair<String, String> pair = (Pair<String, String>) mEtReply.getTag();
-
-        Comment comment = new Comment().setContent(mEtReply.getText().toString())
-                .setCommunityId(mCommunity.getId())
-                .setCommentId(pair.first).setParentId(pair.second);
-        if (theOhterNickName != null)
-            comment.setTheOtherNickName(theOhterNickName);
-
-        mManager.sendBroadcast(new Intent(CommunityFragment.CommunityFragmentReceiver.ACTION)
-                .putExtra(CommunityFragment.CommunityFragmentReceiver.ACTION, "reply")
-                .putExtra("comment", comment));
-    }
-
-    @Override
-    public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
-        mCurrentPage = 1;
-        sendCommentBroadcast();
-    }
-
-    private void sendCommentBroadcast() {
-        mManager.sendBroadcast(new Intent(CommunityFragment.CommunityFragmentReceiver.ACTION)
-                .putExtra(CommunityFragment.CommunityFragmentReceiver.ACTION, "loadComments")
-                .putExtra("page", mCurrentPage)
-                .putExtra("communityId", mCommunity.getId()));
-    }
-
-    @Override
-    public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
-        mCurrentPage++;
-        sendCommentBroadcast();
-        return false;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mManager.unregisterReceiver(mReceiver);
-    }
-
-    public class CommunityDetailReceiver extends BroadcastReceiver {
-        public static final String ACTION = "CommunityDetailReceiver";
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getBooleanExtra("isReply", false)) {
-                Toast.makeText(context, "评论成功", Toast.LENGTH_SHORT).show();
-                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                        .hideSoftInputFromWindow(CommunityDetialActivity.this.getCurrentFocus()
-                                .getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                mEtReply.setText("");
-                mEtReply.setTag(new Pair<>(mCommunity.getId(), mCommunity.getId()));
-                theOhterNickName = null;
-                return;
-            }
-            if (intent.getBooleanExtra("likeSuccess", false)) {
+        CommunityFragment.getCommunityInterface().like(new CommunityInterface.Subsriber() {
+            @Override
+            public void onComplete() {
                 mIvLike.setBackgroundResource(R.drawable.zan_style_2);
                 mIvLike.setImageResource(R.drawable.ic_zan_hover);
                 mTvLikeNum.setTextColor(getResources().getColor(R.color.like_num));
                 mTvLikeNum.setText(String.valueOf(Integer.valueOf(mTvLikeNum.getText().toString()) + 1));
                 mCommunity.setLike(true);
-                FloatingText   floatingText = new FloatingText.FloatingTextBuilder(CommunityDetialActivity.this)
+                FloatingText floatingText = new FloatingText.FloatingTextBuilder(CommunityDetialActivity.this)
                         .textColor(getResources().getColor(R.color.like_num)) // floating  text color
                         .textSize(100)   // floating  text size
                         .textContent("+1") // floating  text content
@@ -214,7 +168,17 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
                 floatingText.startFloating(mTvLikeNum);
                 mIvLike.setOnClickListener(CommunityDetialActivity.this);
             }
-            if (intent.getBooleanExtra("unlikeSuccess", false)) {
+        }, mCommunity.getId());
+    }
+
+    /**
+     * 取赞
+     */
+    private void unLike() {
+        mIvLike.setOnClickListener(null);
+        CommunityFragment.getCommunityInterface().unLike(new CommunityInterface.Subsriber() {
+            @Override
+            public void onComplete() {
                 mIvLike.setBackgroundResource(R.drawable.zan_style);
                 mIvLike.setImageResource(R.drawable.ic_zan);
                 mTvLikeNum.setTextColor(getResources().getColor(R.color.gray));
@@ -222,23 +186,45 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
                 mCommunity.setLike(false);
                 mIvLike.setOnClickListener(CommunityDetialActivity.this);
             }
-            if (mCurrentPage == 1) {
-                List<Comment> comments = (List<Comment>) intent.getExtras().get("comments");
-                if (comments != null){
-                    mAdapter = new CommentAdapter(CommunityDetialActivity.this, mCommunity.getId(), comments, CommunityDetialActivity.this);
-                    mRvReplies.setAdapter(mAdapter);
-                }
-            }
-        }
+        }, mCommunity.getId());
     }
 
+
+    /**
+     * 评论
+     */
+    private void comment() {
+        Pair<String, String> pair = (Pair<String, String>) mEtReply.getTag();
+
+        // TODO: 2017/11/28
+
+/*        Comment comment = new Comment().setContent(mEtReply.getText().toString())
+                .setCommunityId(mCommunity.getId())
+                .setCommentId(pair.first).setParentId(pair.second);
+        if (theOhterNickName != null)
+            comment.setTheOtherNickName(theOhterNickName);*/
+
+        CommunityFragment.getCommunityInterface().comment(new CommunityInterface.CommentSubsriber2() {
+            @Override
+            public void onComplete(String nickName) {
+                Toast.makeText(CommunityDetialActivity.this, "评论成功", Toast.LENGTH_SHORT).show();
+                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                        .hideSoftInputFromWindow(CommunityDetialActivity.this.getCurrentFocus()
+                                .getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                mEtReply.setText("");
+                mEtReply.setTag(new Pair<>(mCommunity.getId(), mCommunity.getId()));
+                theOhterNickName = null;
+            }
+        },mCommunity.getId(),pair.second,pair.first,mEtReply.getText().toString());
+
+    }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK){
-            switch (requestCode){
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
                 case REQUEST_CODE_REPLY:
 
                     break;

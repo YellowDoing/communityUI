@@ -1,10 +1,7 @@
 package hg.yellowdoing.communityui;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
@@ -12,10 +9,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import me.iwf.photopicker.PhotoPicker;
 import me.iwf.photopicker.PhotoPreview;
@@ -30,8 +23,6 @@ public class PostActivity extends Activity implements View.OnClickListener {
     private RecyclerView mRecyclerView;
     private ImageSelectAdapter mAdapter;
     private EditText mEtContent;
-    private LocalBroadcastManager mManager;
-    private PostReceiver mReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +39,6 @@ public class PostActivity extends Activity implements View.OnClickListener {
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_select_images);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 4, LinearLayoutManager.VERTICAL, false));
         mRecyclerView.setAdapter(mAdapter);
-        mManager = LocalBroadcastManager.getInstance(this);
-        mReceiver = new PostReceiver();
-        mManager.registerReceiver(mReceiver, new IntentFilter(PostReceiver.ACTION));
     }
 
     @Override
@@ -81,25 +69,12 @@ public class PostActivity extends Activity implements View.OnClickListener {
         community.setContent(mEtContent.getText().toString());
         community.setImagePaths(mAdapter.getPaths());
 
-        mManager.sendBroadcast(new Intent(CommunityFragment.CommunityFragmentReceiver.ACTION)
-                .putExtra(CommunityFragment.CommunityFragmentReceiver.ACTION, "post")
-                .putExtra("community", community));
-    }
-
-
-    public class PostReceiver extends BroadcastReceiver {
-
-        public static final String ACTION = "PostReceiver";
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            finish();
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mManager.unregisterReceiver(mReceiver);
+        CommunityFragment.getCommunityInterface().post(new CommunityInterface.Subsriber() {
+            @Override
+            public void onComplete() {
+                LocalBroadcastManager.getInstance(PostActivity.this).sendBroadcast(new Intent());
+                finish();
+            }
+        },community.getImagePaths(),community.getContent());
     }
 }

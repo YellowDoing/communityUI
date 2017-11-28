@@ -71,7 +71,7 @@ public class ChildReplyAdapter extends BaseAdapter {
         } else {
             view = mInflater.inflate(R.layout.list_item_more, null);
             TextView more = view.findViewById(R.id.tv_more);
-            more.setText("还有" + (mCommentList.size() - position - 1) + "条回复>>");
+            more.setText("还有" + (mCommentList.size() - position) + "条回复>>");
             more.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
