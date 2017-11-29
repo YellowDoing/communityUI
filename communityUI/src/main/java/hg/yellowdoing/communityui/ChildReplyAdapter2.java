@@ -10,7 +10,7 @@ import android.widget.TextView;
 import java.util.List;
 
 /**
- * Created by Administrator on 2017/11/27.
+ * Created by YellowDoing on 2017/11/27.
  */
 
 public class ChildReplyAdapter2 extends BaseAdapter {

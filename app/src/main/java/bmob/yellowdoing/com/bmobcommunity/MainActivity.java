@@ -162,7 +162,15 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
         comment.setAuthor(DroiUser.getCurrentUser(User.class));
         DroiError error = comment.save();
         if (error.isOk()) {
-            subsriber.onComplete(DroiUser.getCurrentUser(User.class).getNickName());
+            Comment c = new Comment();
+            c.setContent(content);
+            c.setCommunityId(communityId);
+            c.setCommentId(commentId);
+            c.setParentId(parentId);
+            c.setId(comment.getObjectId());
+            c.setNickName(DroiUser.getCurrentUser(User.class).getNickName());
+            c.setAvatar(DroiUser.getCurrentUser(User.class).getAvatar().getUri().toString().replaceAll("\\\\",""));
+            subsriber.onComplete(c);
             likeOrUnlike(new Subsriber() {
                 @Override
                 public void onComplete() {

@@ -20,14 +20,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.ufreedom.uikit.FloatingText;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
 /**
  * Created by YellowDoing on 2017/11/13.
  */
@@ -40,12 +36,12 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
     private EditText mEtReply;
     private LocalBroadcastManager mManager;
     private int mCurrentPage;
-    private BGARefreshLayout mRefreshLayout;
     private Community mCommunity;
     private CommentAdapter mAdapter;
     private String theOhterNickName;
     private ImageView mIvLike;
     public static final int REQUEST_CODE_REPLY = 13;
+    private boolean isResumed;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -111,7 +107,19 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
         mTvContent.setText(mCommunity.getContent());
         mTvNickName.setText(mCommunity.getNickName());
 
-        loadComments();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!isResumed) loadComments();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isResumed = true;
     }
 
     /**
@@ -196,17 +204,9 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
     private void comment() {
         Pair<String, String> pair = (Pair<String, String>) mEtReply.getTag();
 
-        // TODO: 2017/11/28
-
-/*        Comment comment = new Comment().setContent(mEtReply.getText().toString())
-                .setCommunityId(mCommunity.getId())
-                .setCommentId(pair.first).setParentId(pair.second);
-        if (theOhterNickName != null)
-            comment.setTheOtherNickName(theOhterNickName);*/
-
         CommunityFragment.getCommunityInterface().comment(new CommunityInterface.CommentSubsriber2() {
             @Override
-            public void onComplete(String nickName) {
+            public void onComplete(Comment comment) {
                 Toast.makeText(CommunityDetialActivity.this, "评论成功", Toast.LENGTH_SHORT).show();
                 ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
                         .hideSoftInputFromWindow(CommunityDetialActivity.this.getCurrentFocus()
@@ -214,6 +214,7 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
                 mEtReply.setText("");
                 mEtReply.setTag(new Pair<>(mCommunity.getId(), mCommunity.getId()));
                 theOhterNickName = null;
+                ((CommentAdapter)mRvReplies.getAdapter()).add(comment);
             }
         },mCommunity.getId(),pair.second,pair.first,mEtReply.getText().toString());
 

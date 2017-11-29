@@ -24,29 +24,50 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyVie
 
     private CommunityDetialActivity mContext;
     private LayoutInflater mInflater;
-    private List<Comment> mComments, mAllComments;
+    private List<Comment> mComments, mAllComments,mAllCommentsCopy;
     private Callback mCallback;
     private String mCommunityId;
 
     public CommentAdapter(CommunityDetialActivity context, String communityId, List<Comment> comments, Callback callback) {
         mContext = context;
         mComments = new ArrayList<>();
-        mAllComments = comments;
+        mAllComments = copy(comments);
+        mAllCommentsCopy = comments;
         mInflater = LayoutInflater.from(mContext);
         mCallback = callback;
         mCommunityId = communityId;
+        initData();
+    }
 
+
+    public void add(Comment comment){
+        mComments.clear();
+        mAllCommentsCopy.add(comment);
+        mAllComments = copy(mAllCommentsCopy);
+        initData();
+        notifyDataSetChanged();
+    }
+
+    private List<Comment> copy(List<Comment> comments){
+        List<Comment> commentList =  new ArrayList<>();
+        for (Comment comment:comments)
+            commentList.add(comment.clone());
+        return commentList;
+    }
+
+
+    private void initData() {
         //筛选出一级评论
-        for (Comment comment : comments)
-            if (comment.getCommentId().equals(communityId))
+        for (Comment comment : mAllComments)
+            if (comment.getCommentId().equals(mCommunityId))
                 mComments.add(comment);
 
         //归类出所有一级评论的子评论
         for (Comment comment : mComments)
-            for (Comment co : comments)
+            for (Comment co : mAllComments)
                 if (comment.getId().equals(co.getParentId())){
                     comment.addChildComments(co);
-                    comment.setCommentId(communityId);
+                    comment.setCommentId(mCommunityId);
                 }
 
 
@@ -57,7 +78,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyVie
                     for (Comment comment2 : comment.getChildComments())
                         if (!comment1.getId().equals(comment.getId()) && comment1.getId().equals(comment2.getCommentId()))
                             comment2.setTheOtherNickName(comment1.getNickName());
-
     }
 
     @Override
@@ -84,7 +104,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyVie
             holder.mLvReply.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Toast.makeText(mContext, "丢按几了", Toast.LENGTH_SHORT).show();
                     mCallback.commentSelect(adapter.getItem(position).getNickName(), adapter.getItem(position).getId(), comment.getId());
                 }
             });

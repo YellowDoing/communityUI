@@ -70,17 +70,20 @@ public class CommentDetailActivity extends Activity {
         });
     }
 
+    /**
+     * 评论
+     */
     private void comment() {
         CommunityFragment.getCommunityInterface().comment(new CommunityInterface.CommentSubsriber2() {
             @Override
-            public void onComplete(String nickname) {
+            public void onComplete(Comment c) {
 
                 Comment comment = new Comment();
                 if (!mComment.getId().equals(mEtReply.getTag()))
                     comment.setTheOtherNickName(mEtReply.getHint().toString().replace("回复：", ""));
 
                 comment.setContent(mEtReply.getText().toString());
-                comment.setNickName(nickname);
+                comment.setNickName(c.getNickName());
                 ((ChildReplyAdapter2) mMyListView.getAdapter()).add(comment);
 
                 mEtReply.setTag(mComment.getId());

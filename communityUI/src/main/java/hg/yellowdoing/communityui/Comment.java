@@ -8,7 +8,7 @@ import java.util.List;
  * Created by Administrator on 2017/11/18.
  */
 
-public class Comment implements Serializable {
+public class Comment implements Serializable , Cloneable{
 
     private String avatar;
     private String nickName;
@@ -128,5 +128,16 @@ public class Comment implements Serializable {
                 ", parentId='" + parentId + '\'' +
                 ", id='" + id + '\'' +
                 '}';
+    }
+
+    @Override
+    public Comment clone() {
+        Comment stu = null;
+        try{
+            stu = (Comment) super.clone();
+        }catch(CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return stu;
     }
 }

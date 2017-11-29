@@ -42,7 +42,7 @@ public interface CommunityInterface{
     }
 
     interface CommentSubsriber2{
-        void onComplete(String nickName);
+        void onComplete(Comment comment);
     }
 
     interface Subsriber{
