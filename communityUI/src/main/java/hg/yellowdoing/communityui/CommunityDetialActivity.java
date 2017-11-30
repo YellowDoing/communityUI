@@ -41,7 +41,6 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
     private String theOhterNickName;
     private ImageView mIvLike;
     public static final int REQUEST_CODE_REPLY = 13;
-    private boolean isResumed;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,19 +106,8 @@ public class CommunityDetialActivity extends Activity implements View.OnClickLis
         mTvContent.setText(mCommunity.getContent());
         mTvNickName.setText(mCommunity.getNickName());
 
+        loadComments();
 
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (!isResumed) loadComments();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        isResumed = true;
     }
 
     /**

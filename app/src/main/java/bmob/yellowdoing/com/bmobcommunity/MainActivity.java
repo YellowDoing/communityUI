@@ -142,6 +142,12 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
 
     @Override
     public void comment(CommentSubsriber2 subsriber, String communityId, String parentId, String commentId, String content) {
+
+        Log.d("aaaa", "comment: " + communityId);
+        Log.d("aaaa", "comment: " + parentId);
+        Log.d("aaaa", "comment: " + commentId);
+        Log.d("aaaa", "comment: " + content);
+
         if (!getSharedPreferences("user", MODE_PRIVATE).getBoolean("isLogin", false)) {
             startActivity(new Intent(this, LoginActivity.class));
             return;

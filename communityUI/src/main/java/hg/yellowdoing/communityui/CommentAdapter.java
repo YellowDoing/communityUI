@@ -60,7 +60,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ReplyVie
         //筛选出一级评论
         for (Comment comment : mAllComments)
             if (comment.getCommentId().equals(mCommunityId))
-                mComments.add(comment);
+                mComments.add(comment.setCommunityId(mCommunityId));
 
         //归类出所有一级评论的子评论
         for (Comment comment : mComments)
