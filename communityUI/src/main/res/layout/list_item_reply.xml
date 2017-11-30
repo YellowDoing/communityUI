@@ -36,6 +36,7 @@
         android:layout_marginTop="2dp"
         android:divider="@null"
         android:background="#f0f0f0"
+        android:paddingBottom="2dp"
         android:layout_marginLeft="@dimen/dp_4"
         android:layout_toRightOf="@+id/iv_avatar"
         android:layout_below="@id/tv_content"

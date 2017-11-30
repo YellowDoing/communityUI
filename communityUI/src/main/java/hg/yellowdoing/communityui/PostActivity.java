@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import me.iwf.photopicker.PhotoPicker;
 import me.iwf.photopicker.PhotoPreview;
@@ -23,12 +25,14 @@ public class PostActivity extends Activity implements View.OnClickListener {
     private RecyclerView mRecyclerView;
     private ImageSelectAdapter mAdapter;
     private EditText mEtContent;
+    private AlertDialog.Builder mDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
         initView();
+        mDialog = new AlertDialog.Builder(this).setView(new ProgressBar(this));
     }
 
     private void initView() {
@@ -65,6 +69,8 @@ public class PostActivity extends Activity implements View.OnClickListener {
     }
 
     private void post() {
+        final AlertDialog loadingView = mDialog.show();
+
         Community community = new Community();
         community.setContent(mEtContent.getText().toString());
         community.setImagePaths(mAdapter.getPaths());
@@ -73,6 +79,7 @@ public class PostActivity extends Activity implements View.OnClickListener {
             @Override
             public void onComplete() {
                 LocalBroadcastManager.getInstance(PostActivity.this).sendBroadcast(new Intent());
+                loadingView.cancel();
                 finish();
             }
         },community.getImagePaths(),community.getContent());

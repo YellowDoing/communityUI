@@ -5,11 +5,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.droi.sdk.DroiCallback;
@@ -35,6 +37,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     private ImageView ivAvatar;
     private EditText etNickName;
     private DroiFile mFile;
+    private AlertDialog.Builder mBuilder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,6 +55,8 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             etNickName.setText(user.getNickName());
         if (user.getAvatar() != null)
             Glide.with(this).load(user.getAvatar()).centerCrop().into(ivAvatar);
+
+        mBuilder = new AlertDialog.Builder(this).setView(new ProgressBar(this));
     }
 
     @Override
@@ -69,7 +74,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-    private void saveUser() {
+    private void saveUser(AlertDialog dialog) {
         User user = DroiUser.getCurrentUser(User.class);
         if (mFile != null)
             user.setAvatar(mFile);
@@ -81,9 +86,12 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
             finish();
         } else
             Toast.makeText(UserInfoActivity.this, error.getAppendedMessage(), Toast.LENGTH_SHORT).show();
+        dialog.cancel();
     }
 
     private void uploadAvatar() {
+        final AlertDialog dialog =  mBuilder.show();
+
         if (mFile != null) {
             DroiPermission permission = new DroiPermission();
             permission.setPublicReadPermission(true);
@@ -92,7 +100,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 @Override
                 public void result(Boolean aBoolean, DroiError droiError) {
                     if (aBoolean)
-                        saveUser();
+                        saveUser(dialog);
                     else
                         Toast.makeText(UserInfoActivity.this, droiError.getAppendedMessage(), Toast.LENGTH_SHORT).show();
                 }
@@ -103,7 +111,7 @@ public class UserInfoActivity extends AppCompatActivity implements View.OnClickL
                 }
             });
         } else
-            saveUser();
+            saveUser(dialog);
     }
 
     @Override

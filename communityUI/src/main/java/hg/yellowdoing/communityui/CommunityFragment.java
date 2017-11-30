@@ -86,6 +86,8 @@ public class CommunityFragment extends Fragment implements SwipeRefreshLayout.On
         }, mCurrentPage);
     }
 
+
+
     /*
     @Override
     public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {

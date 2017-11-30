@@ -143,10 +143,6 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
     @Override
     public void comment(CommentSubsriber2 subsriber, String communityId, String parentId, String commentId, String content) {
 
-        Log.d("aaaa", "comment: " + communityId);
-        Log.d("aaaa", "comment: " + parentId);
-        Log.d("aaaa", "comment: " + commentId);
-        Log.d("aaaa", "comment: " + content);
 
         if (!getSharedPreferences("user", MODE_PRIVATE).getBoolean("isLogin", false)) {
             startActivity(new Intent(this, LoginActivity.class));
@@ -246,8 +242,8 @@ public class MainActivity extends AppCompatActivity implements CommunityInterfac
                 };
                 Request request = new Request.Builder()
                         .url("https://api.droibaas.com/rest/objects/v2/Community/" + communityId)
-                        .addHeader("X-Droi-AppID", "3gltmbzh_tAPpNFDH-LvwZAA5ngH31dHlQBkjYMm")
-                        .addHeader("X-Droi-Api-Key", "ZtpNEPYAg5t8mqzZdyfz3UK9d26YBEqMzCYPji8SUMfWBqHqFthWVdiQrQtGtLvL")
+                        .addHeader("X-Droi-AppID", "3gltmbzhTh3BSQhS1kQMSa-QyLaEmjTPlQD0QtoM")
+                        .addHeader("X-Droi-Api-Key", "hCjT6NULJXTcJV4cbOcZkocGCoQEHpzdEHGzu4WwBrOiY3anhVm7ZKqMsjTRDzWD")
                         .addHeader("Content-Type", "application/json").patch(body).build();
 
                 okHttpClient.newCall(request).enqueue(new Callback() {
