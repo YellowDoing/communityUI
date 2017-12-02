@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -80,7 +81,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Toast.makeText(LoginActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
                             getSharedPreferences("user",MODE_PRIVATE).edit().putBoolean("isLogin",true).apply();
                             finish();
-                        }else Toast.makeText(LoginActivity.this, result.getAppendedMessage(), Toast.LENGTH_SHORT).show();
+                        }else Log.d("aaaa", "login: " + result.toString());
                     }
                 })
                 .setPositiveButton("取消", new DialogInterface.OnClickListener() {
