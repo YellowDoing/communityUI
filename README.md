@@ -3,7 +3,7 @@
 
 ![](https://note.youdao.com/yws/api/personal/file/WEB065b58ab97645293aaa2f2287d10bea1?method=download&shareKey=eb82539165ecee4e1694a44d889405bf)      ![](https://note.youdao.com/yws/api/personal/file/WEB2caef7ed89cd62aa5e048c5e22892262?method=download&shareKey=163142cec3144bf4fb135fac6c0abf87)
 
-> 建议有一个自己的后台数据库，可直接继承,示例代码用的是作者自己的简单后台
+> 建议有一个自己的后台数据库，可直接集成,示例代码用的是作者自己的简单后台
 
 #### 集成步骤
 1 . 继承CommunityInterface接口，添加fragment
